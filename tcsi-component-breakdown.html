@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCSI Component Breakdown</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- React & Chart.js -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .chart-container {
+            font-family: 'Montserrat', sans-serif;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            position: relative;
+            padding: 1rem;
+            height: auto;
+        }
+        
+        .chart-container.fullscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            padding: 1.5rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .title-section h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .title-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .fullscreen-btn {
+            padding: 0.5rem;
+            border-radius: 9999px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+        }
+        
+        .fullscreen-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .search-input {
+            display: block;
+            width: 100%;
+            padding-left: 2.5rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: white;
+            color: #000;
+            font-size: 0.875rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        
+        .search-input::placeholder {
+            color: #6b7280;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 1.25rem;
+            width: 1.25rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+        
+        .year-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .year-slider-container {
+            flex: 1;
+            margin: 0 0.5rem;
+            position: relative;
+        }
+        
+        .year-slider {
+            width: 100%;
+            height: 0.75rem;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .year-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #00528a;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .year-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #00528a;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: none;
+        }
+        
+        .year-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.5rem;
+            margin-top: 0.25rem;
+            position: relative;
+        }
+        
+        .year-label {
+            position: absolute;
+            transform: translateX(-50%);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem;
+        }
+        
+        .year-label.current {
+            font-weight: 600;
+            color: #00528a;
+        }
+        
+        .year-label.normal {
+            font-weight: 400;
+            color: #6b7280;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .chart-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .component-list {
+            width: 100%;
+        }
+        
+        .component-list h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+            max-height: 24rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .component-item {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            border-left-width: 4px;
+        }
+        
+        .component-item:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .component-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+        }
+        
+        .component-percentage {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .component-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .legend {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .legend-color {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            border-radius: 9999px;
+        }
+        
+        .legend-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                padding: 0.75rem;
+                border-radius: 8px;
+            }
+            
+            .title-section h1 {
+                font-size: 1.5rem;
+            }
+            
+            .title-section h2 {
+                font-size: 1rem;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .chart-section {
+                width: 100%;
+                height: 24rem;
+            }
+            
+            .component-list {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="tcsi-breakdown-chart"></div>
+
+    <script>
+        // CEK LIBRARIES
+        if (typeof React === 'undefined') {
+            document.getElementById('tcsi-breakdown-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">React belum loaded</div>';
+            throw new Error('React not loaded');
+        }
+
+        if (typeof Chart === 'undefined') {
+            document.getElementById('tcsi-breakdown-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">Chart.js belum loaded</div>';
+            throw new Error('Chart.js not loaded');
+        }
+
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // Sample data structure - you can replace this with your own data
+        const initialData = {
+            2021: [
+                { name: 'Servers', value: 30, color: '#20b2aa' },
+                { name: 'Network Equipment', value: 25, color: '#00528a' },
+                { name: 'Storage Systems', value: 20, color: '#b15bcf' },
+                { name: 'Security Hardware', value: 15, color: '#25d0c7' },
+                { name: 'Power Infrastructure', value: 10, color: '#a487cf' }
+            ],
+            2022: [
+                { name: 'Servers', value: 28, color: '#20b2aa' },
+                { name: 'Network Equipment', value: 27, color: '#00528a' },
+                { name: 'Storage Systems', value: 22, color: '#b15bcf' },
+                { name: 'Security Hardware', value: 16, color: '#25d0c7' },
+                { name: 'Power Infrastructure', value: 7, color: '#a487cf' }
+            ],
+            2023: [
+                { name: 'Servers', value: 25, color: '#20b2aa' },
+                { name: 'Network Equipment', value: 30, color: '#00528a' },
+                { name: 'Storage Systems', value: 24, color: '#b15bcf' },
+                { name: 'Security Hardware', value: 18, color: '#25d0c7' },
+                { name: 'Power Infrastructure', value: 3, color: '#a487cf' }
+            ],
+            2024: [
+                { name: 'Servers', value: 22, color: '#20b2aa' },
+                { name: 'Network Equipment', value: 32, color: '#00528a' },
+                { name: 'Storage Systems', value: 26, color: '#b15bcf' },
+                { name: 'Security Hardware', value: 18, color: '#25d0c7' },
+                { name: 'Power Infrastructure', value: 2, color: '#a487cf' }
+            ],
+            2025: [
+                { name: 'Servers', value: 20, color: '#20b2aa' },
+                { name: 'Network Equipment', value: 35, color: '#00528a' },
+                { name: 'Storage Systems', value: 28, color: '#b15bcf' },
+                { name: 'Security Hardware', value: 15, color: '#25d0c7' },
+                { name: 'Power Infrastructure', value: 2, color: '#a487cf' }
+            ]
+        };
+
+        // Icons untuk search dan navigate
+        const SearchIcon = () => React.createElement('svg', {
+            className: 'search-icon',
+            fill: 'none',
+            stroke: 'currentColor',
+            viewBox: '0 0 24 24'
+        }, React.createElement('path', {
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            strokeWidth: 2,
+            d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+        }));
+
+        const ChevronLeft = () => React.createElement('svg', {
+            width: '24',
+            height: '24',
+            fill: 'none',
+            stroke: 'currentColor',
+            viewBox: '0 0 24 24'
+        }, React.createElement('path', {
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            strokeWidth: 2,
+            d: 'M15 19l-7-7 7-7'
+        }));
+
+        const ChevronRight = () => React.createElement('svg', {
+            width: '24',
+            height: '24',
+            fill: 'none',
+            stroke: 'currentColor',
+            viewBox: '0 0 24 24'
+        }, React.createElement('path', {
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            strokeWidth: 2,
+            d: 'M9 5l7 7-7 7'
+        }));
+
+        const Maximize2 = () => React.createElement('svg', {
+            width: '20',
+            height: '20',
+            fill: 'none',
+            stroke: 'currentColor',
+            viewBox: '0 0 24 24'
+        }, React.createElement('path', {
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            strokeWidth: 2,
+            d: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'
+        }));
+
+        const TCSIComponentBreakdown = () => {
+            const years = useMemo(() => Object.keys(initialData), []);
+            const [activeIndex, setActiveIndex] = useState(0);
+            const [currentYear, setCurrentYear] = useState(years[years.length - 1]);
+            const [isFullScreen, setIsFullScreen] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [isMobile, setIsMobile] = useState(false);
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                const checkMobile = () => {
+                    setIsMobile(window.innerWidth < 768);
+                };
+                
+                checkMobile();
+                window.addEventListener('resize', checkMobile);
+                
+                return () => window.removeEventListener('resize', checkMobile);
+            }, []);
+
+            const onPieEnter = (_, index) => {
+                setActiveIndex(index);
+            };
+
+            const filteredData = useMemo(() => {
+                return initialData[currentYear].filter(item => 
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }, [currentYear, searchQuery]);
+
+            const totalValue = useMemo(() => {
+                return filteredData.reduce((sum, item) => sum + item.value, 0);
+            }, [filteredData]);
+
+            const navigateYear = (direction) => {
+                const currentIndex = years.indexOf(currentYear);
+                const newIndex = direction === 'next' 
+                    ? Math.min(currentIndex + 1, years.length - 1) 
+                    : Math.max(currentIndex - 1, 0);
+                setCurrentYear(years[newIndex]);
+            };
+
+            const toggleFullScreen = () => {
+                setIsFullScreen(!isFullScreen);
+            };
+
+            // Create pie chart
+            useEffect(() => {
+                if (chartRef.current) {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                    
+                    const ctx = chartRef.current.getContext('2d');
+                    
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: filteredData.map(item => item.name),
+                            datasets: [{
+                                data: filteredData.map(item => item.value),
+                                backgroundColor: filteredData.map(item => item.color),
+                                borderWidth: 0,
+                                hoverBorderWidth: 5,
+                                hoverBorderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'white',
+                                    titleColor: '#000',
+                                    bodyColor: '#000',
+                                    borderColor: '#e5e7eb',
+                                    borderWidth: 1,
+                                    cornerRadius: 6,
+                                    titleFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 700,
+                                        size: 18
+                                    },
+                                    bodyFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 500,
+                                        size: 14
+                                    },
+                                    displayColors: false,
+                                    callbacks: {
+                                        title: function(context) {
+                                            return context[0].label;
+                                        },
+                                        label: function(context) {
+                                            const percentage = ((context.parsed / totalValue) * 100).toFixed(1);
+                                            return `${context.parsed}% (${percentage}% of total)`;
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, elements) => {
+                                if (elements.length > 0) {
+                                    setActiveIndex(elements[0].index);
+                                }
+                            },
+                            animation: {
+                                duration: 300
+                            }
+                        }
+                    });
+                }
+            }, [filteredData, totalValue]);
+
+            // Cleanup
+            useEffect(() => {
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                };
+            }, []);
+
+            return React.createElement('div', {
+                className: `chart-container ${isFullScreen ? 'fullscreen' : ''}`
+            }, [
+                // Header with title and fullscreen button
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'header'
+                }, [
+                    React.createElement('div', {
+                        key: 'title-section',
+                        className: 'title-section'
+                    }, [
+                        React.createElement('h1', {
+                            key: 'title'
+                        }, 'TCSI Component Breakdown'),
+                        React.createElement('h2', {
+                            key: 'subtitle'
+                        }, 'Evolution of Infrastructure Components')
+                    ]),
+                    React.createElement('button', {
+                        key: 'fullscreen-btn',
+                        className: 'fullscreen-btn',
+                        onClick: toggleFullScreen
+                    }, React.createElement(Maximize2))
+                ]),
+
+                // Search bar
+                React.createElement('div', {
+                    key: 'search',
+                    className: 'search-container'
+                }, [
+                    React.createElement('div', {
+                        key: 'search-icon',
+                        className: 'search-icon-container'
+                    }, React.createElement(SearchIcon)),
+                    React.createElement('input', {
+                        key: 'search-input',
+                        type: 'text',
+                        className: 'search-input',
+                        placeholder: 'Search components...',
+                        value: searchQuery,
+                        onChange: (e) => setSearchQuery(e.target.value)
+                    })
+                ]),
+
+                // Year navigation
+                React.createElement('div', {
+                    key: 'year-nav',
+                    className: 'year-navigation'
+                }, [
+                    React.createElement('button', {
+                        key: 'prev-btn',
+                        className: 'nav-btn',
+                        onClick: () => navigateYear('prev'),
+                        disabled: years.indexOf(currentYear) === 0
+                    }, React.createElement(ChevronLeft)),
+                    
+                    React.createElement('div', {
+                        key: 'slider-container',
+                        className: 'year-slider-container'
+                    }, [
+                        React.createElement('input', {
+                            key: 'year-slider',
+                            type: 'range',
+                            min: '0',
+                            max: years.length - 1,
+                            value: years.indexOf(currentYear),
+                            onChange: (e) => setCurrentYear(years[e.target.value]),
+                            className: 'year-slider'
+                        }),
+                        React.createElement('div', {
+                            key: 'year-labels',
+                            className: 'year-labels'
+                        }, years.map((year, index) => {
+                            const isCurrentYear = year === currentYear;
+                            const position = `${(index / (years.length - 1)) * 100}%`;
+                            
+                            return React.createElement('div', {
+                                key: year,
+                                className: `year-label ${isCurrentYear ? 'current' : 'normal'}`,
+                                style: { left: position }
+                            }, year);
+                        }))
+                    ]),
+                    
+                    React.createElement('button', {
+                        key: 'next-btn',
+                        className: 'nav-btn',
+                        onClick: () => navigateYear('next'),
+                        disabled: years.indexOf(currentYear) === years.length - 1
+                    }, React.createElement(ChevronRight))
+                ]),
+
+                React.createElement('div', {
+                    key: 'main-content',
+                    className: `main-content ${isMobile ? 'mobile' : 'desktop'}`
+                }, [
+                    // Pie chart
+                    React.createElement('div', {
+                        key: 'chart-section',
+                        className: `chart-section ${isMobile ? 'mobile' : 'desktop'}`,
+                        style: { 
+                            width: isMobile ? '100%' : '60%', 
+                            height: isMobile ? '24rem' : '35rem' 
+                        }
+                    }, React.createElement('canvas', {
+                        ref: chartRef,
+                        style: { width: '100%', height: '100%' }
+                    })),
+
+                    // Component list
+                    React.createElement('div', {
+                        key: 'component-list',
+                        className: 'component-list',
+                        style: { width: isMobile ? '100%' : '40%' }
+                    }, [
+                        React.createElement('h2', {
+                            key: 'list-title'
+                        }, `Components (${currentYear})`),
+                        React.createElement('div', {
+                            key: 'component-grid',
+                            className: 'component-grid'
+                        }, filteredData.map((item, index) => 
+                            React.createElement('div', {
+                                key: index,
+                                className: 'component-item',
+                                onMouseEnter: () => setActiveIndex(index),
+                                style: { borderLeftColor: item.color }
+                            }, React.createElement('div', {
+                                className: 'component-header'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'info'
+                                }, [
+                                    React.createElement('h4', {
+                                        key: 'name',
+                                        className: 'component-name'
+                                    }, item.name),
+                                    React.createElement('p', {
+                                        key: 'percentage',
+                                        className: 'component-percentage'
+                                    }, `${(item.value / totalValue * 100).toFixed(1)}% of total`)
+                                ]),
+                                React.createElement('div', {
+                                    key: 'value',
+                                    className: 'component-value'
+                                }, `${item.value}%`)
+                            ]))
+                        ))
+                    ])
+                ]),
+
+                // Legend for colors
+                React.createElement('div', {
+                    key: 'legend',
+                    className: 'legend'
+                }, initialData[currentYear].map((item, index) => 
+                    React.createElement('div', {
+                        key: index,
+                        className: 'legend-item'
+                    }, [
+                        React.createElement('div', {
+                            key: 'color',
+                            className: 'legend-color',
+                            style: { backgroundColor: item.color }
+                        }),
+                        React.createElement('span', {
+                            key: 'text',
+                            className: 'legend-text'
+                        }, item.name)
+                    ])
+                ))
+            ]);
+        };
+
+        // Render
+        setTimeout(() => {
+            try {
+                const root = ReactDOM.createRoot(document.getElementById('tcsi-breakdown-chart'));
+                root.render(React.createElement(TCSIComponentBreakdown));
+            } catch (error) {
+                document.getElementById('tcsi-breakdown-chart').innerHTML = 
+                    `<div style="padding: 20px; text-align: center; color: red;">Error: ${error.message}</div>`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
