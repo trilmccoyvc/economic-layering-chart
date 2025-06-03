@@ -23,16 +23,17 @@
         
         body {
             background-color: #ffffff;
-            padding: 40px 20px;
+            padding: 0;
             margin: 0;
             color: #333;
         }
         
         .chart-container {
             font-family: 'Montserrat', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
             background-color: white;
+            padding: 20px;
+            min-height: 100vh;
         }
         
         /* Economist-style typography hierarchy */
@@ -132,8 +133,8 @@
         }
         
         @media (max-width: 768px) {
-            body {
-                padding: 20px 16px;
+            .chart-container {
+                padding: 16px;
             }
             
             .chart-title {
