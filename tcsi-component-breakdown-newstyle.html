@@ -1,0 +1,851 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2113.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;TCSI Component Breakdown&lt;/title&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Google Fonts --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- React &amp; Chart.js --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"&gt;&lt;/script&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif !important;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #ffffff;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 40px 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 900px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0 auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: all 0.5s ease;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-container.fullscreen {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: fixed;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>inset: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>z-index: 50;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 40px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow-y: auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Economist-style typography hierarchy */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-title {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #262626;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0 0 8px 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>line-height: 1.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: left;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-subtitle {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 14px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #666666;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0 0 24px 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>line-height: 1.4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: left;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: flex-start;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 24px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.title-section {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.fullscreen-btn {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #f8f8f8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid #d0d0d0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-left: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.fullscreen-btn:hover {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #e8e8e8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-color: #b0b0b0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Controls styling with Economist sensibilities */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.controls-section {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 24px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding-bottom: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid #e0e0e0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.search-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 300px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.search-input {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 8px 12px 8px 36px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid #d0d0d0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 13px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.search-input:focus {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>outline: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-color: #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 0 0 1px #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.search-input::placeholder {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #888;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.search-icon {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>left: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>top: 50%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transform: translateY(-50%);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #888;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>pointer-events: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-navigation {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-btn {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #f8f8f8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid #d0d0d0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-btn:hover:not(:disabled) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #e8e8e8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-color: #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-btn:disabled {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>opacity: 0.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: not-allowed;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-slider-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-slider {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: #e0e0e0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 3px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appearance: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-slider::-webkit-slider-thumb {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>-webkit-appearance: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appearance: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 50%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: background 0.3s ease;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-slider::-moz-range-thumb {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 50%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: background 0.3s ease;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-labels {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-label {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transform: translateX(-50%);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-label.current {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #00528a;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.year-label.normal {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #666;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Main content area */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.main-content {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 32px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: flex-start;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-section {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>min-height: 400px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-list {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 350px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-shrink: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-list h3 {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-grid {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: grid;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>grid-template-columns: 1fr;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-height: 400px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow-y: auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding-right: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-item {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid #e0e0e0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-left-width: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-item:hover {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-color: #d0d0d0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: flex-start;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-name {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 500;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 13px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 4px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-percentage {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 11px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #888;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.component-value {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Legend styling - Economist approach */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legend {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 24px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding-top: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-top: 1px solid #e0e0e0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-wrap: wrap;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legend-item {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legend-color {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 2px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-shrink: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legend-text {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Montserrat', sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #333;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Source/notes styling */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-source {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 11px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #888;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>line-height: 1.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: left;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media (max-width: 768px) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>padding: 20px 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.chart-container.fullscreen {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>padding: 20px 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.chart-title {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>font-size: 18px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.chart-subtitle {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>font-size: 13px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>align-items: flex-start;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>gap: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.fullscreen-btn {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>align-self: flex-end;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>margin-left: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.controls-section {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>gap: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.search-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>max-width: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.main-content {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>gap: 24px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.chart-section {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>min-height: 300px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.component-list {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.legend {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>justify-content: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="tcsi-breakdown-chart"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// CEK LIBRARIES</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (typeof React === 'undefined') {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('tcsi-breakdown-chart').innerHTML =<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'&lt;div style="padding: 20px; text-align: center; color: red;"&gt;React belum loaded&lt;/div&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>throw new Error('React not loaded');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (typeof Chart === 'undefined') {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('tcsi-breakdown-chart').innerHTML =<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>'&lt;div style="padding: 20px; text-align: center; color: red;"&gt;Chart.js belum loaded&lt;/div&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>throw new Error('Chart.js not loaded');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const { useState, useEffect, useRef, useMemo } = React;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Data yang sama persis dengan aslinya</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const initialData = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2021: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Servers', value: 30, color: '#20b2aa' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Network Equipment', value: 25, color: '#00528a' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Storage Systems', value: 20, color: '#b15bcf' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Security Hardware', value: 15, color: '#25d0c7' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Power Infrastructure', value: 10, color: '#a487cf' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2022: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Servers', value: 28, color: '#20b2aa' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Network Equipment', value: 27, color: '#00528a' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Storage Systems', value: 22, color: '#b15bcf' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Security Hardware', value: 16, color: '#25d0c7' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Power Infrastructure', value: 7, color: '#a487cf' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2023: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Servers', value: 25, color: '#20b2aa' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Network Equipment', value: 30, color: '#00528a' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Storage Systems', value: 24, color: '#b15bcf' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Security Hardware', value: 18, color: '#25d0c7' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Power Infrastructure', value: 3, color: '#a487cf' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2024: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Servers', value: 22, color: '#20b2aa' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Network Equipment', value: 32, color: '#00528a' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Storage Systems', value: 26, color: '#b15bcf' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Security Hardware', value: 18, color: '#25d0c7' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Power Infrastructure', value: 2, color: '#a487cf' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2025: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Servers', value: 20, color: '#20b2aa' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Network Equipment', value: 35, color: '#00528a' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Storage Systems', value: 28, color: '#b15bcf' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Security Hardware', value: 15, color: '#25d0c7' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>{ name: 'Power Infrastructure', value: 2, color: '#a487cf' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Icons yang sama dengan aslinya</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const SearchIcon = () =&gt; React.createElement('svg', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>className: 'search-icon',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fill: 'none',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stroke: 'currentColor',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>viewBox: '0 0 24 24'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, React.createElement('path', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinecap: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinejoin: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeWidth: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const ChevronLeft = () =&gt; React.createElement('svg', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: '20',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: '20',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fill: 'none',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stroke: 'currentColor',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>viewBox: '0 0 24 24'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, React.createElement('path', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinecap: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinejoin: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeWidth: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>d: 'M15 19l-7-7 7-7'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const ChevronRight = () =&gt; React.createElement('svg', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: '20',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: '20',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fill: 'none',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stroke: 'currentColor',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>viewBox: '0 0 24 24'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, React.createElement('path', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinecap: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinejoin: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeWidth: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>d: 'M9 5l7 7-7 7'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const Maximize2 = () =&gt; React.createElement('svg', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: '18',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: '18',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fill: 'none',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stroke: 'currentColor',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>viewBox: '0 0 24 24'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, React.createElement('path', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinecap: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeLinejoin: 'round',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>strokeWidth: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>d: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const TCSIComponentBreakdown = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const years = useMemo(() =&gt; Object.keys(initialData), []);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [activeIndex, setActiveIndex] = useState(0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [currentYear, setCurrentYear] = useState(years[years.length - 1]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [isFullScreen, setIsFullScreen] = useState(false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [searchQuery, setSearchQuery] = useState('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [isMobile, setIsMobile] = useState(false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const chartRef = useRef(null);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const chartInstance = useRef(null);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const checkMobile = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>setIsMobile(window.innerWidth &lt; 768);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>};</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>checkMobile();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>window.addEventListener('resize', checkMobile);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return () =&gt; window.removeEventListener('resize', checkMobile);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, []);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const onPieEnter = (_, index) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setActiveIndex(index);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const filteredData = useMemo(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return initialData[currentYear].filter(item =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>item.name.toLowerCase().includes(searchQuery.toLowerCase())</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, [currentYear, searchQuery]);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalValue = useMemo(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return filteredData.reduce((sum, item) =&gt; sum + item.value, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, [filteredData]);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const navigateYear = (direction) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const currentIndex = years.indexOf(currentYear);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const newIndex = direction === 'next'<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>? Math.min(currentIndex + 1, years.length - 1)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>: Math.max(currentIndex - 1, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setCurrentYear(years[newIndex]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const toggleFullScreen = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setIsFullScreen(!isFullScreen);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Create pie chart dengan styling Economist</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (chartRef.current) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (chartInstance.current) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>chartInstance.current.destroy();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const ctx = chartRef.current.getContext('2d');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>chartInstance.current = new Chart(ctx, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>type: 'doughnut',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>data: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>labels: filteredData.map(item =&gt; item.name),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>datasets: [{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>data: filteredData.map(item =&gt; item.value),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>backgroundColor: filteredData.map(item =&gt; item.color),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>borderWidth: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>hoverBorderWidth: 3,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>hoverBorderColor: '#fff'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>options: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>responsive: true,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>maintainAspectRatio: false,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>cutout: '60%',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>plugins: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>legend: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>display: false</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>tooltip: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>backgroundColor: 'white',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>titleColor: '#000',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>bodyColor: '#000',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>borderColor: '#e0e0e0',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>borderWidth: 1,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>cornerRadius: 4,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>titleFont: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>family: 'Montserrat, sans-serif',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>weight: 600,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>size: 14</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>bodyFont: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>family: 'Montserrat, sans-serif',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>weight: 400,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>size: 12</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>displayColors: false,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>callbacks: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>title: function(context) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>return context[0].label;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>label: function(context) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>const percentage = ((context.parsed / totalValue) * 100).toFixed(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>return `${context.parsed}% (${percentage}% of total)`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>onHover: (event, elements) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>if (elements.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>setActiveIndex(elements[0].index);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>animation: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>duration: 300</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, [filteredData, totalValue]);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Cleanup</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (chartInstance.current) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>chartInstance.current.destroy();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, []);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>className: `chart-container ${isFullScreen ? 'fullscreen' : ''}`</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Header dengan Economist-style positioning</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>key: 'header',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>className: 'header'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'title-section',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'title-section'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('h1', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'title',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'chart-title'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, 'TCSI Component Breakdown'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('p', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'subtitle',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'chart-subtitle'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, 'Evolution of Infrastructure Components')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>]),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'fullscreen-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'fullscreen-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>onClick: toggleFullScreen</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, React.createElement(Maximize2))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>]),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Controls section</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>key: 'controls',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>className: 'controls-section'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Search bar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'search',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'search-container'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'search-icon',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'search-icon-container'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, React.createElement(SearchIcon)),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('input', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'search-input',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>type: 'text',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'search-input',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>placeholder: 'Search components...',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>value: searchQuery,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>onChange: (e) =&gt; setSearchQuery(e.target.value)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>]),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Year navigation</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'year-nav',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'year-navigation'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'prev-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'nav-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>onClick: () =&gt; navigateYear('prev'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>disabled: years.indexOf(currentYear) === 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, React.createElement(ChevronLeft)),</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'slider-container',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'year-slider-container'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('input', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>key: 'year-slider',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>type: 'range',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>min: '0',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>max: years.length - 1,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>value: years.indexOf(currentYear),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setCurrentYear(years[e.target.value]),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: 'year-slider'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>key: 'year-labels',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: 'year-labels'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}, years.map((year, index) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>const isCurrentYear = year === currentYear;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>const position = `${(index / (years.length - 1)) * 100}%`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>return React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>key: year,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>className: `year-label ${isCurrentYear ? 'current' : 'normal'}`,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>style: { left: position }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}, year);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>]),</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'next-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'nav-btn',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>onClick: () =&gt; navigateYear('next'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>disabled: years.indexOf(currentYear) === years.length - 1</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, React.createElement(ChevronRight))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>])</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>]),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>key: 'main-content',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>className: 'main-content'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Pie chart</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'chart-section',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'chart-section'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, React.createElement('canvas', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>ref: chartRef,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>style: { width: '100%', height: '100%' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>})),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Component list</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: 'component-list',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'component-list'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('h3', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'list-title'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, `Components (${currentYear})`),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'component-grid',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'component-grid'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, filteredData.map((item, index) =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>key: index,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: 'component-item',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onMouseEnter: () =&gt; setActiveIndex(index),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>style: { borderLeftColor: item.color }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}, React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: 'component-header'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>key: 'info'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('h4', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>key: 'name',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>className: 'component-name'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>}, item.name),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('p', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>key: 'percentage',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>className: 'component-percentage'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>}, `${(item.value / totalValue * 100).toFixed(1)}% of total`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>]),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>key: 'value',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>className: 'component-value'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}, `${item.value}%`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>]))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>])</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>]),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Legend - Economist style</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>key: 'legend',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>className: 'legend'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, initialData[currentYear].map((item, index) =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>key: index,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>className: 'legend-item'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}, [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'color',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'legend-color',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>style: { backgroundColor: item.color }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('span', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>key: 'text',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: 'legend-text'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}, item.name)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>])</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>)),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Source information</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>key: 'source',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>className: 'chart-source'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, 'Source: Technology Component Sustainability Index (TCSI) analysis, 2021-2025')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Render</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const root = ReactDOM.createRoot(document.getElementById('tcsi-breakdown-chart'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>root.render(React.createElement(TCSIComponentBreakdown));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} catch (error) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>document.getElementById('tcsi-breakdown-chart').innerHTML =<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>`&lt;div style="padding: 20px; text-align: center; color: red;"&gt;Error: ${error.message}&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, 1000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
