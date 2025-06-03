@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost to Mint Economic Equilibrium</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- React & Chart.js -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #ffffff;
+            padding: 40px 20px;
+            margin: 0;
+            color: #333;
+        }
+        
+        .chart-container {
+            font-family: 'Montserrat', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+        }
+        
+        /* Economist-style typography hierarchy */
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        .chart-subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666666;
+            margin: 0 0 24px 0;
+            line-height: 1.4;
+            text-align: left;
+            max-width: 600px;
+        }
+        
+        /* Controls styling with Economist sensibilities */
+        .controls {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background-color: #00528a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .btn:hover {
+            background-color: #003d6b;
+        }
+        
+        .btn:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+        
+        /* Chart area styling */
+        .chart-wrapper {
+            margin-bottom: 24px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        /* Scenario selection styling */
+        .scenarios-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .scenarios-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .scenario-card {
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .scenario-card.selected {
+            border-width: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scenario-card:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scenario-header {
+            margin-bottom: 8px;
+        }
+        
+        .scenario-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .scenario-description {
+            font-size: 12px;
+            color: #666;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        
+        .equilibrium-info {
+            font-size: 11px;
+            margin-top: 8px;
+            font-weight: 500;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        /* Source/notes styling */
+        .chart-source {
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 16px;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+            
+            .chart-title {
+                font-size: 18px;
+            }
+            
+            .chart-subtitle {
+                font-size: 13px;
+            }
+            
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="cost-to-mint-chart"></div>
+
+    <script>
+        // CEK LIBRARIES
+        if (typeof React === 'undefined') {
+            document.getElementById('cost-to-mint-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">React belum loaded</div>';
+            throw new Error('React not loaded');
+        }
+
+        if (typeof Chart === 'undefined') {
+            document.getElementById('cost-to-mint-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">Chart.js belum loaded</div>';
+            throw new Error('Chart.js not loaded');
+        }
+
+        const { useState, useEffect, useRef } = React;
+
+        // Data scenarios yang sama persis dengan aslinya
+        const initialData = {
+            scenario1: {
+                name: "Base Case Scenario",
+                description: "Standard market conditions with moderate growth",
+                data: [
+                    { time: 0, cost: 100, revenue: 50, profit: -50 },
+                    { time: 1, cost: 105, revenue: 80, profit: -25 },
+                    { time: 2, cost: 110, revenue: 100, profit: -10 },
+                    { time: 3, cost: 115, revenue: 120, profit: 5 },
+                    { time: 4, cost: 120, revenue: 135, profit: 15 },
+                    { time: 5, cost: 125, revenue: 150, profit: 25 }
+                ],
+                color: "#3B82F6"
+            },
+            scenario2: {
+                name: "High Demand Scenario",
+                description: "Increased market demand with accelerated adoption",
+                data: [
+                    { time: 0, cost: 110, revenue: 60, profit: -50 },
+                    { time: 1, cost: 115, revenue: 100, profit: -15 },
+                    { time: 2, cost: 120, revenue: 140, profit: 20 },
+                    { time: 3, cost: 125, revenue: 170, profit: 45 },
+                    { time: 4, cost: 130, revenue: 190, profit: 60 },
+                    { time: 5, cost: 135, revenue: 210, profit: 75 }
+                ],
+                color: "#10B981"
+            },
+            scenario3: {
+                name: "Cost Reduction Scenario",
+                description: "Implementation of efficiency measures reducing minting costs",
+                data: [
+                    { time: 0, cost: 90, revenue: 50, profit: -40 },
+                    { time: 1, cost: 85, revenue: 75, profit: -10 },
+                    { time: 2, cost: 80, revenue: 95, profit: 15 },
+                    { time: 3, cost: 75, revenue: 110, profit: 35 },
+                    { time: 4, cost: 70, revenue: 125, profit: 55 },
+                    { time: 5, cost: 65, revenue: 140, profit: 75 }
+                ],
+                color: "#b15bcf"
+            }
+        };
+
+        const CostToMintChart = () => {
+            const [selectedScenarios, setSelectedScenarios] = useState(['scenario1']);
+            const [isAnimating, setIsAnimating] = useState(false);
+            const [timeIndex, setTimeIndex] = useState(5);
+            const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+            const intervalRef = useRef(null);
+
+            useEffect(() => {
+                const handleResize = () => {
+                    setWindowWidth(window.innerWidth);
+                };
+                
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            const isMobile = windowWidth < 768;
+
+            // Toggle animation
+            const toggleAnimation = () => {
+                if (isAnimating) {
+                    clearInterval(intervalRef.current);
+                    setIsAnimating(false);
+                } else {
+                    setTimeIndex(0);
+                    intervalRef.current = setInterval(() => {
+                        setTimeIndex(prev => {
+                            const maxTime = Math.max(...Object.values(initialData).map(scenario => 
+                                scenario.data.length - 1
+                            ));
+                            
+                            if (prev >= maxTime) {
+                                clearInterval(intervalRef.current);
+                                setIsAnimating(false);
+                                return maxTime;
+                            }
+                            return prev + 1;
+                        });
+                    }, 1000);
+                    setIsAnimating(true);
+                }
+            };
+
+            // Toggle scenario selection
+            const toggleScenario = (scenarioId) => {
+                setSelectedScenarios(prev => {
+                    if (prev.includes(scenarioId)) {
+                        if (prev.length === 1) return prev;
+                        return prev.filter(id => id !== scenarioId);
+                    } else {
+                        return [...prev, scenarioId];
+                    }
+                });
+            };
+
+            // Find equilibrium point
+            const findEquilibriumPoint = (scenarioId) => {
+                const scenarioData = initialData[scenarioId].data;
+                for (let i = 1; i < scenarioData.length; i++) {
+                    if ((scenarioData[i-1].profit <= 0 && scenarioData[i].profit > 0) ||
+                        (scenarioData[i-1].profit >= 0 && scenarioData[i].profit < 0)) {
+                        
+                        const x1 = scenarioData[i-1].time;
+                        const y1 = scenarioData[i-1].profit;
+                        const x2 = scenarioData[i].time;
+                        const y2 = scenarioData[i].profit;
+                        
+                        const crossX = x1 + (-y1) * (x2 - x1) / (y2 - y1);
+                        
+                        return { time: crossX, visible: timeIndex >= i };
+                    }
+                }
+                return null;
+            };
+
+            // Create chart dengan styling Economist
+            useEffect(() => {
+                if (chartRef.current) {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                    
+                    const ctx = chartRef.current.getContext('2d');
+                    
+                    // Prepare datasets
+                    const datasets = [];
+                    
+                    selectedScenarios.forEach(scenarioId => {
+                        const scenario = initialData[scenarioId];
+                        const filteredData = scenario.data.slice(0, timeIndex + 1);
+                        
+                        // Cost line
+                        datasets.push({
+                            label: `${scenario.name} - Cost`,
+                            data: filteredData.map(d => ({ x: d.time, y: d.cost })),
+                            borderColor: `${scenario.color}AA`,
+                            backgroundColor: `${scenario.color}AA`,
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: isMobile ? 2 : 3,
+                            pointHoverRadius: 6
+                        });
+                        
+                        // Revenue line
+                        datasets.push({
+                            label: `${scenario.name} - Revenue`,
+                            data: filteredData.map(d => ({ x: d.time, y: d.revenue })),
+                            borderColor: scenario.color,
+                            backgroundColor: scenario.color,
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: isMobile ? 2 : 3,
+                            pointHoverRadius: 6
+                        });
+                        
+                        // Profit line
+                        datasets.push({
+                            label: `${scenario.name} - Profit`,
+                            data: filteredData.map(d => ({ x: d.time, y: d.profit })),
+                            borderColor: `${scenario.color}77`,
+                            backgroundColor: `${scenario.color}77`,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: isMobile ? 2 : 3,
+                            pointHoverRadius: 6
+                        });
+                    });
+
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'line',
+                        data: { datasets },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'white',
+                                    titleColor: '#000',
+                                    bodyColor: '#000',
+                                    borderColor: '#e0e0e0',
+                                    borderWidth: 1,
+                                    cornerRadius: 4,
+                                    titleFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 600,
+                                        size: 13
+                                    },
+                                    bodyFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 400,
+                                        size: 12
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    title: {
+                                        display: true,
+                                        text: 'Time',
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '500',
+                                            size: 13
+                                        },
+                                        color: '#333'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '400',
+                                            size: 12
+                                        },
+                                        color: '#666'
+                                    },
+                                    grid: {
+                                        color: '#e0e0e0',
+                                        drawBorder: true,
+                                        borderColor: '#333'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Value',
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '500',
+                                            size: 13
+                                        },
+                                        color: '#333'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '400',
+                                            size: 12
+                                        },
+                                        color: '#666'
+                                    },
+                                    grid: {
+                                        color: '#e0e0e0',
+                                        drawBorder: true,
+                                        borderColor: '#333'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }, [selectedScenarios, timeIndex, isMobile]);
+
+            // Cleanup
+            useEffect(() => {
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                    if (intervalRef.current) {
+                        clearInterval(intervalRef.current);
+                    }
+                };
+            }, []);
+
+            return React.createElement('div', {
+                className: 'chart-container'
+            }, [
+                // Economist-style title positioning: left-aligned, proper hierarchy
+                React.createElement('h1', {
+                    key: 'title',
+                    className: 'chart-title'
+                }, 'Cost to Mint Economic Equilibrium'),
+                
+                React.createElement('p', {
+                    key: 'subtitle',
+                    className: 'chart-subtitle'
+                }, 'Visualizing break-even dynamics with multiple scenario options'),
+                
+                // Controls dengan styling Economist
+                React.createElement('div', {
+                    key: 'controls',
+                    className: 'controls'
+                }, [
+                    React.createElement('button', {
+                        key: 'play-btn',
+                        className: 'btn',
+                        onClick: toggleAnimation
+                    }, isAnimating ? 'Pause Animation' : 'Play Animation'),
+                ]),
+                
+                // Chart container
+                React.createElement('div', {
+                    key: 'chart-wrapper',
+                    className: 'chart-wrapper',
+                    style: {
+                        width: '100%',
+                        height: isMobile ? '300px' : '400px',
+                        padding: '16px'
+                    }
+                }, 
+                    React.createElement('canvas', {
+                        key: 'chart',
+                        ref: chartRef,
+                        style: {
+                            width: '100%',
+                            height: '100%'
+                        }
+                    })
+                ),
+                
+                // Scenario Selection - Economist style
+                React.createElement('div', {
+                    key: 'scenarios',
+                    className: 'scenarios-section'
+                }, [
+                    React.createElement('h3', {
+                        key: 'scenarios-title',
+                        className: 'scenarios-title'
+                    }, 'Scenarios'),
+                    
+                    React.createElement('div', {
+                        key: 'scenario-grid',
+                        className: 'scenario-grid'
+                    }, Object.keys(initialData).map(scenarioId => {
+                        const scenario = initialData[scenarioId];
+                        const isSelected = selectedScenarios.includes(scenarioId);
+                        const equilibrium = findEquilibriumPoint(scenarioId);
+                        
+                        return React.createElement('div', {
+                            key: scenarioId,
+                            className: `scenario-card ${isSelected ? 'selected' : ''}`,
+                            onClick: () => toggleScenario(scenarioId),
+                            style: {
+                                borderColor: isSelected ? scenario.color : '#e0e0e0',
+                                backgroundColor: isSelected ? `${scenario.color}08` : 'white'
+                            }
+                        }, [
+                            React.createElement('div', {
+                                key: 'header',
+                                className: 'scenario-header'
+                            }, [
+                                React.createElement('h4', {
+                                    key: 'title',
+                                    className: 'scenario-title',
+                                    style: { color: scenario.color }
+                                }, scenario.name),
+                            ]),
+                            
+                            React.createElement('p', {
+                                key: 'description',
+                                className: 'scenario-description'
+                            }, scenario.description),
+                            
+                            equilibrium && React.createElement('p', {
+                                key: 'equilibrium',
+                                className: 'equilibrium-info',
+                                style: { color: scenario.color }
+                            }, `Equilibrium at time: ${equilibrium.time.toFixed(2)}`)
+                        ]);
+                    }))
+                ]),
+
+                // Source information
+                React.createElement('div', {
+                    key: 'source',
+                    className: 'chart-source'
+                }, 'Source: Economic modeling of cost-to-mint scenarios and break-even analysis')
+            ]);
+        };
+
+        // Render
+        setTimeout(() => {
+            try {
+                const root = ReactDOM.createRoot(document.getElementById('cost-to-mint-chart'));
+                root.render(React.createElement(CostToMintChart));
+            } catch (error) {
+                document.getElementById('cost-to-mint-chart').innerHTML = 
+                    `<div style="padding: 20px; text-align: center; color: red;">Error: ${error.message}</div>`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
