@@ -37,14 +37,7 @@
             position: relative;
         }
         
-        .chart-container.fullscreen {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            padding: 40px;
-            max-width: none;
-            overflow-y: auto;
-        }
+
         
         /* Economist-style typography hierarchy */
         .chart-title {
@@ -66,30 +59,7 @@
         }
         
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
             margin-bottom: 24px;
-        }
-        
-        .title-section {
-            flex: 1;
-        }
-        
-        .fullscreen-btn {
-            padding: 8px;
-            border-radius: 4px;
-            background-color: #f8f8f8;
-            border: 1px solid #d0d0d0;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #333;
-            margin-left: 16px;
-        }
-        
-        .fullscreen-btn:hover {
-            background-color: #e8e8e8;
-            border-color: #b0b0b0;
         }
         
         /* Controls styling with Economist sensibilities */
@@ -346,10 +316,6 @@
                 padding: 20px 16px;
             }
             
-            .chart-container.fullscreen {
-                padding: 20px 16px;
-            }
-            
             .chart-title {
                 font-size: 18px;
             }
@@ -359,14 +325,7 @@
             }
             
             .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .fullscreen-btn {
-                align-self: flex-end;
-                margin-left: 0;
+                margin-bottom: 24px;
             }
             
             .controls-section {
@@ -495,24 +454,12 @@
             d: 'M9 5l7 7-7 7'
         }));
 
-        const Maximize2 = () => React.createElement('svg', {
-            width: '18',
-            height: '18',
-            fill: 'none',
-            stroke: 'currentColor',
-            viewBox: '0 0 24 24'
-        }, React.createElement('path', {
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round',
-            strokeWidth: 2,
-            d: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7'
-        }));
+
 
         const TCSIComponentBreakdown = () => {
             const years = useMemo(() => Object.keys(initialData), []);
             const [activeIndex, setActiveIndex] = useState(0);
             const [currentYear, setCurrentYear] = useState(years[years.length - 1]);
-            const [isFullScreen, setIsFullScreen] = useState(false);
             const [searchQuery, setSearchQuery] = useState('');
             const [isMobile, setIsMobile] = useState(false);
             const chartRef = useRef(null);
@@ -551,9 +498,7 @@
                 setCurrentYear(years[newIndex]);
             };
 
-            const toggleFullScreen = () => {
-                setIsFullScreen(!isFullScreen);
-            };
+
 
             // Create pie chart dengan styling Economist
             useEffect(() => {
@@ -636,31 +581,21 @@
             }, []);
 
             return React.createElement('div', {
-                className: `chart-container ${isFullScreen ? 'fullscreen' : ''}`
+                className: 'chart-container'
             }, [
                 // Header dengan Economist-style positioning
                 React.createElement('div', {
                     key: 'header',
                     className: 'header'
                 }, [
-                    React.createElement('div', {
-                        key: 'title-section',
-                        className: 'title-section'
-                    }, [
-                        React.createElement('h1', {
-                            key: 'title',
-                            className: 'chart-title'
-                        }, 'TCSI Component Breakdown'),
-                        React.createElement('p', {
-                            key: 'subtitle',
-                            className: 'chart-subtitle'
-                        }, 'Evolution of Infrastructure Components')
-                    ]),
-                    React.createElement('button', {
-                        key: 'fullscreen-btn',
-                        className: 'fullscreen-btn',
-                        onClick: toggleFullScreen
-                    }, React.createElement(Maximize2))
+                    React.createElement('h1', {
+                        key: 'title',
+                        className: 'chart-title'
+                    }, 'TCSI Component Breakdown'),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'chart-subtitle'
+                    }, 'Evolution of Infrastructure Components')
                 ]),
 
                 // Controls section
