@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure Dividend Mechanism</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- React & Chart.js -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #ffffff;
+            padding: 40px 20px;
+            margin: 0;
+            color: #333;
+        }
+        
+        .chart-container {
+            font-family: 'Montserrat', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+        }
+        
+        /* Economist-style typography hierarchy */
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        .chart-subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666666;
+            margin: 0 0 24px 0;
+            line-height: 1.4;
+            text-align: left;
+        }
+        
+        /* Progress section styling */
+        .progress-section {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .progress-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .progress-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            height: 8px;
+        }
+        
+        .progress-fill {
+            height: 8px;
+            border-radius: 4px;
+            transition: all 0.5s ease-out;
+            background: linear-gradient(90deg, #20b2aa 0%, #25d0c7 100%);
+        }
+        
+        /* Main grid layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        .chart-section {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        /* Timeline styling */
+        .timeline-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .timeline-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-slider {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            appearance: none;
+            cursor: pointer;
+            accent-color: #20b2aa;
+        }
+        
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #20b2aa;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .timeline-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #20b2aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        /* Phase details styling */
+        .phase-details {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 16px;
+        }
+        
+        .phase-header {
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .phase-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .phase-timeline {
+            font-size: 11px;
+            color: #888;
+            font-weight: 400;
+        }
+        
+        .phase-progress-section {
+            margin-bottom: 16px;
+        }
+        
+        .phase-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .phase-progress-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .phase-progress-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .phase-progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            height: 6px;
+        }
+        
+        .phase-progress-fill {
+            height: 6px;
+            border-radius: 4px;
+            transition: all 0.5s ease-out;
+        }
+        
+        .detail-section {
+            margin-bottom: 16px;
+        }
+        
+        .detail-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .detail-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .case-study {
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* Source/notes styling */
+        .chart-source {
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 16px;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+            
+            .chart-title {
+                font-size: 18px;
+            }
+            
+            .chart-subtitle {
+                font-size: 13px;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .chart-section,
+            .phase-details {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="infrastructure-dividend-chart"></div>
+
+    <script>
+        // CEK LIBRARIES
+        if (typeof React === 'undefined') {
+            document.getElementById('infrastructure-dividend-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">React belum loaded</div>';
+            throw new Error('React not loaded');
+        }
+
+        if (typeof Chart === 'undefined') {
+            document.getElementById('infrastructure-dividend-chart').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: red;">Chart.js belum loaded</div>';
+            throw new Error('Chart.js not loaded');
+        }
+
+        const { useState, useEffect, useRef } = React;
+
+        /**
+         * DATA CONFIGURATION - sama persis dengan aslinya
+         */
+        const initialData = [
+            {
+                phase: 1,
+                name: "Initial Infrastructure Investment",
+                progress: 20, // 0-20% di fase pertama
+                timeline: "2023-2024",
+                description: "Establishing core infrastructure and initial capital investment",
+                details: "This phase focuses on building the foundational infrastructure necessary for the dividend mechanism. It includes hardware deployment, network establishment, and initial protocol development.",
+                casestudy: "A regional data center implementing the first iteration of the mechanism reduced operating costs by 15% within 6 months.",
+                color: "#20b2aa" // primary color dari palet warna
+            },
+            {
+                phase: 2,
+                name: "Protocol Optimization",
+                progress: 40, // 20-40% di fase kedua
+                timeline: "2024-2025",
+                description: "Refining protocols and expanding network capacity",
+                details: "During this phase, the focus shifts to optimizing the underlying protocols, improving efficiency, and expanding the network's capacity to handle increased demand.",
+                casestudy: "Cloud service provider XYZ implemented optimized protocols, resulting in 30% increased throughput and 25% reduced latency.",
+                color: "#00528a" // secondary color dari palet warna
+            },
+            {
+                phase: 3,
+                name: "Fee Reduction Implementation",
+                progress: 60, // 40-60% di fase ketiga
+                timeline: "2025-2026",
+                description: "Systematic reduction of fees through optimization and scale",
+                details: "As the network grows and optimizations take effect, fees begin to decrease systematically. This phase implements the mechanisms for calculating and distributing the infrastructure dividend.",
+                casestudy: "A decentralized storage network reduced user fees by 40% while maintaining profitability through operational efficiencies.",
+                color: "#b15bcf" // tertiary color dari palet warna
+            },
+            {
+                phase: 4,
+                name: "Ecosystem Expansion",
+                progress: 80, // 60-80% di fase keempat
+                timeline: "2026-2027",
+                description: "Growing the ecosystem of services built on the infrastructure",
+                details: "The ecosystem expands as more services are built on top of the infrastructure. This phase focuses on creating a rich environment of applications and services that leverage the near-zero fee structure.",
+                casestudy: "Emerging markets saw a 300% increase in small business technology adoption after fees dropped below critical thresholds.",
+                color: "#25d0c7" // hover color dari palet warna
+            },
+            {
+                phase: 5,
+                name: "Zero-Fee Achievement",
+                progress: 100, // 80-100% di fase terakhir
+                timeline: "2027-2028",
+                description: "Reaching the goal of effectively zero-fee computing",
+                details: "The final phase represents the achievement of the zero-fee computing goal. At this stage, the infrastructure dividend fully offsets the operational costs, allowing for services to be provided without direct fees to users.",
+                casestudy: "A public research computing grid achieved zero-fee operation, enabling unprecedented access for educational institutions globally.",
+                color: "#30c9c1" // variasi dari primary/hover color
+            }
+        ];
+
+        /**
+         * HELPER FUNCTIONS - sama dengan aslinya
+         */
+        const prepareChartData = (phaseData) => {
+            const chartData = [];
+            
+            phaseData.forEach((phase, index) => {
+                const previousPhaseProgress = index > 0 ? 
+                    phaseData[index-1].progress : 0;
+                
+                chartData.push({
+                    x: index,
+                    y: previousPhaseProgress,
+                    phase: phase.phase,
+                    name: phase.name,
+                    color: phase.color,
+                    isPhaseStart: true
+                });
+                
+                chartData.push({
+                    x: index + 1,
+                    y: phase.progress,
+                    phase: phase.phase,
+                    name: phase.name,
+                    color: phase.color,
+                    isPhaseEnd: true
+                });
+            });
+            
+            return chartData;
+        };
+
+        const createTimelineData = (phaseData) => {
+            return phaseData.map((phase, index) => ({
+                x: index,
+                phase: phase.phase,
+                name: phase.name,
+                progress: phase.progress,
+                timeline: phase.timeline,
+                color: phase.color
+            }));
+        };
+
+        /**
+         * MAIN COMPONENT
+         */
+        const InfrastructureDividendChart = () => {
+            const [phaseData] = useState(initialData);
+            const [selectedPhase, setSelectedPhase] = useState(null);
+            const [timelinePosition, setTimelinePosition] = useState(50);
+            const [isMobile, setIsMobile] = useState(false);
+            const [chartData, setChartData] = useState([]);
+            const [timelineData, setTimelineData] = useState([]);
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+            
+            useEffect(() => {
+                const handleResize = () => {
+                    setIsMobile(window.innerWidth < 768);
+                };
+                
+                handleResize();
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+            
+            useEffect(() => {
+                setChartData(prepareChartData(phaseData));
+                setTimelineData(createTimelineData(phaseData));
+                
+                const activePhase = phaseData
+                    .filter(phase => phase.progress < 100)
+                    .sort((a, b) => b.progress - a.progress)[0] || phaseData[phaseData.length - 1];
+                
+                setSelectedPhase(activePhase);
+            }, [phaseData]);
+
+            const overallProgress = 60;
+            
+            const handleTimelineChange = (e) => {
+                const newPosition = parseInt(e.target.value, 10);
+                setTimelinePosition(newPosition);
+                
+                const phaseIndex = Math.min(
+                    Math.floor(newPosition / (100 / phaseData.length)),
+                    phaseData.length - 1
+                );
+                setSelectedPhase(phaseData[phaseIndex]);
+            };
+
+            // Create chart dengan styling Economist
+            useEffect(() => {
+                if (chartRef.current) {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                    
+                    const ctx = chartRef.current.getContext('2d');
+                    
+                    chartInstance.current = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: phaseData.map((_, index) => `Phase ${index + 1}`),
+                            datasets: [{
+                                label: 'Progress',
+                                data: phaseData.map(phase => phase.progress),
+                                borderColor: '#20b2aa',
+                                backgroundColor: 'rgba(32, 178, 170, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                stepped: true,
+                                pointBackgroundColor: phaseData.map(phase => phase.color),
+                                pointBorderColor: phaseData.map(phase => phase.color),
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'white',
+                                    titleColor: '#000',
+                                    bodyColor: '#000',
+                                    borderColor: '#e0e0e0',
+                                    borderWidth: 1,
+                                    cornerRadius: 4,
+                                    titleFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 600,
+                                        size: 13
+                                    },
+                                    bodyFont: {
+                                        family: 'Montserrat, sans-serif',
+                                        weight: 400,
+                                        size: 12
+                                    },
+                                    callbacks: {
+                                        title: function(context) {
+                                            const dataIndex = context[0].dataIndex;
+                                            return phaseData[dataIndex].name;
+                                        },
+                                        label: function(context) {
+                                            return `Progress: ${context.parsed.y}%`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Phases',
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '500',
+                                            size: 13
+                                        },
+                                        color: '#333'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '400',
+                                            size: 12
+                                        },
+                                        color: '#666'
+                                    },
+                                    grid: {
+                                        color: '#e0e0e0',
+                                        drawBorder: true,
+                                        borderColor: '#333'
+                                    }
+                                },
+                                y: {
+                                    min: 0,
+                                    max: 100,
+                                    title: {
+                                        display: true,
+                                        text: 'Progress (%)',
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '500',
+                                            size: 13
+                                        },
+                                        color: '#333'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        },
+                                        font: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: '400',
+                                            size: 12
+                                        },
+                                        color: '#666'
+                                    },
+                                    grid: {
+                                        color: '#e0e0e0',
+                                        drawBorder: true,
+                                        borderColor: '#333'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }, [phaseData, isMobile]);
+
+            useEffect(() => {
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                };
+            }, []);
+            
+            return React.createElement('div', {
+                className: 'chart-container'
+            }, [
+                // Economist-style title positioning: left-aligned, proper hierarchy
+                React.createElement('h1', {
+                    key: 'title',
+                    className: 'chart-title'
+                }, 'Infrastructure Dividend Mechanism'),
+                
+                React.createElement('p', {
+                    key: 'subtitle',
+                    className: 'chart-subtitle'
+                }, 'Progression Toward Zero-Fee Computing'),
+                
+                React.createElement('div', {
+                    key: 'progress-section',
+                    className: 'progress-section'
+                }, [
+                    React.createElement('div', {
+                        key: 'progress-header',
+                        className: 'progress-header'
+                    }, [
+                        React.createElement('span', {
+                            key: 'label',
+                            className: 'progress-label'
+                        }, 'Overall Progress'),
+                        React.createElement('span', {
+                            key: 'value',
+                            className: 'progress-value'
+                        }, `${overallProgress.toFixed(1)}%`)
+                    ]),
+                    React.createElement('div', {
+                        key: 'progress-bar',
+                        className: 'progress-bar'
+                    }, React.createElement('div', {
+                        className: 'progress-fill',
+                        style: { width: `${overallProgress}%` }
+                    }))
+                ]),
+                
+                React.createElement('div', {
+                    key: 'main-grid',
+                    className: isMobile ? '' : 'main-grid'
+                }, [
+                    // Progress Chart
+                    React.createElement('div', {
+                        key: 'chart-section',
+                        className: 'chart-section'
+                    }, [
+                        React.createElement('h3', {
+                            key: 'chart-title',
+                            className: 'section-title'
+                        }, 'Progress Visualization'),
+                        React.createElement('div', {
+                            key: 'chart-container',
+                            style: { height: '240px', width: '100%' }
+                        }, React.createElement('canvas', {
+                            ref: chartRef,
+                            style: { width: '100%', height: '100%' }
+                        })),
+                        
+                        // Timeline scrubber
+                        React.createElement('div', {
+                            key: 'timeline-section',
+                            className: 'timeline-section'
+                        }, [
+                            React.createElement('label', {
+                                key: 'timeline-label',
+                                htmlFor: 'timeline-scrubber',
+                                className: 'timeline-label'
+                            }, 'Timeline Scrubber'),
+                            React.createElement('input', {
+                                key: 'timeline-slider',
+                                id: 'timeline-scrubber',
+                                type: 'range',
+                                min: '0',
+                                max: '100',
+                                value: timelinePosition,
+                                onChange: handleTimelineChange,
+                                className: 'timeline-slider'
+                            }),
+                            React.createElement('div', {
+                                key: 'timeline-labels',
+                                className: 'timeline-labels'
+                            }, phaseData.map((phase) => 
+                                React.createElement('div', {
+                                    key: `timeline-${phase.phase}`
+                                }, React.createElement('span', {}, phase.timeline.split('-')[0]))
+                            ).concat([
+                                React.createElement('div', {
+                                    key: 'timeline-end'
+                                }, React.createElement('span', {}, phaseData[phaseData.length-1]?.timeline.split('-')[1]))
+                            ]))
+                        ])
+                    ]),
+                    
+                    // Phase Details
+                    React.createElement('div', {
+                        key: 'phase-details',
+                        className: 'phase-details'
+                    }, selectedPhase ? [
+                        React.createElement('div', {
+                            key: 'phase-header',
+                            className: 'phase-header',
+                            style: { backgroundColor: selectedPhase.color + '15' }
+                        }, [
+                            React.createElement('h3', {
+                                key: 'phase-title',
+                                className: 'phase-title',
+                                style: { color: selectedPhase.color }
+                            }, `Phase ${selectedPhase.phase}: ${selectedPhase.name}`),
+                            React.createElement('div', {
+                                key: 'phase-timeline',
+                                className: 'phase-timeline'
+                            }, selectedPhase.timeline)
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'phase-progress-section',
+                            className: 'phase-progress-section'
+                        }, [
+                            React.createElement('div', {
+                                key: 'phase-progress-header',
+                                className: 'phase-progress-header'
+                            }, [
+                                React.createElement('span', {
+                                    key: 'phase-progress-label',
+                                    className: 'phase-progress-label'
+                                }, 'Phase Progress'),
+                                React.createElement('span', {
+                                    key: 'phase-progress-value',
+                                    className: 'phase-progress-value'
+                                }, `${selectedPhase.progress}%`)
+                            ]),
+                            React.createElement('div', {
+                                key: 'phase-progress-bar',
+                                className: 'phase-progress-bar'
+                            }, React.createElement('div', {
+                                className: 'phase-progress-fill',
+                                style: { 
+                                    width: `${selectedPhase.progress}%`, 
+                                    backgroundColor: selectedPhase.color 
+                                }
+                            }))
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'description-section',
+                            className: 'detail-section'
+                        }, [
+                            React.createElement('h4', {
+                                key: 'description-title',
+                                className: 'detail-title'
+                            }, 'Description'),
+                            React.createElement('p', {
+                                key: 'description-content',
+                                className: 'detail-content'
+                            }, selectedPhase.description)
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'details-section',
+                            className: 'detail-section'
+                        }, [
+                            React.createElement('h4', {
+                                key: 'details-title',
+                                className: 'detail-title'
+                            }, 'Details'),
+                            React.createElement('p', {
+                                key: 'details-content',
+                                className: 'detail-content'
+                            }, selectedPhase.details)
+                        ]),
+                        
+                        React.createElement('div', {
+                            key: 'casestudy-section',
+                            className: 'detail-section'
+                        }, [
+                            React.createElement('h4', {
+                                key: 'casestudy-title',
+                                className: 'detail-title'
+                            }, 'Case Study'),
+                            React.createElement('div', {
+                                key: 'casestudy-content',
+                                className: 'case-study',
+                                style: { backgroundColor: selectedPhase.color + '10' }
+                            }, selectedPhase.casestudy)
+                        ])
+                    ] : [
+                        React.createElement('div', {
+                            key: 'no-selection',
+                            style: { 
+                                textAlign: 'center', 
+                                padding: '2rem', 
+                                color: '#888',
+                                fontSize: '12px'
+                            }
+                        }, 'Select a phase to view details')
+                    ])
+                ]),
+
+                // Source information
+                React.createElement('div', {
+                    key: 'source',
+                    className: 'chart-source'
+                }, 'Source: Infrastructure investment modeling and dividend mechanism analysis, 2023-2028')
+            ]);
+        };
+
+        // Render
+        setTimeout(() => {
+            try {
+                const root = ReactDOM.createRoot(document.getElementById('infrastructure-dividend-chart'));
+                root.render(React.createElement(InfrastructureDividendChart));
+            } catch (error) {
+                document.getElementById('infrastructure-dividend-chart').innerHTML = 
+                    `<div style="padding: 20px; text-align: center; color: red;">Error: ${error.message}</div>`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
