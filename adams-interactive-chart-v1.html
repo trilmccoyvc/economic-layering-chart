@@ -753,19 +753,51 @@
                             bodyColor: '#000',
                             borderColor: '#e0e0e0',
                             borderWidth: 1,
+                            cornerRadius: 4,
+                            padding: 12,
                             titleFont: {
                                 family: 'Montserrat, sans-serif',
-                                weight: '600'
+                                weight: '600',
+                                size: 13
                             },
                             bodyFont: {
-                                family: 'Montserrat, sans-serif'
+                                family: 'Montserrat, sans-serif',
+                                weight: '400',
+                                size: 12
                             },
                             callbacks: {
                                 title: function(context) {
-                                    return `Day ${context[0].parsed.x}`;
+                                    return `Month: ${Math.round(context[0].parsed.x / 30)}`;
                                 },
                                 label: function(context) {
-                                    return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                    const day = context.parsed.x;
+                                    const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
+                                    
+                                    if (context.dataset.label === 'Standard Price') {
+                                        return `Market Price: ${formatCurrency(dataPoint.standard.price)}`;
+                                    } else if (context.dataset.label === 'Moderate Price') {
+                                        return `Market Price: ${formatCurrency(dataPoint.moderate.price)}`;
+                                    } else if (context.dataset.label === 'Accelerated Price') {
+                                        return `Market Price: ${formatCurrency(dataPoint.accelerated.price)}`;
+                                    }
+                                    return '';
+                                },
+                                afterBody: function(context) {
+                                    const day = context[0].parsed.x;
+                                    const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
+                                    
+                                    const pathKey = context[0].dataset.label.toLowerCase().includes('standard') ? 'standard' :
+                                                   context[0].dataset.label.toLowerCase().includes('moderate') ? 'moderate' : 'accelerated';
+                                    
+                                    const data = dataPoint[pathKey];
+                                    const completedMilestones = Math.min(6, Math.floor((day / pathCompletionDays[pathKey]) * 6));
+                                    
+                                    return [
+                                        `Treasury Participation: ${data.treasury.toFixed(1)}%`,
+                                        `Long-term Commitments: ${data.commitments.toFixed(1)}%`,
+                                        `Milestones Completed: ${completedMilestones}/6`,
+                                        `Path Progress: ${Math.min(100, Math.round((day / pathCompletionDays[pathKey]) * 100))}%`
+                                    ];
                                 }
                             }
                         },
