@@ -620,68 +620,93 @@
 
             const chartData = getChartData();
             
-            // Update datasets based on selected path
-            const datasets = [];
+            // Clear existing datasets
+            priceChart.data.datasets = [];
             
+            // Add datasets based on selected path
             if (selectedPath === 'all' || selectedPath === 'standard') {
-                datasets.push({
+                priceChart.data.datasets.push({
                     label: 'Standard Price',
                     data: chartData.map(d => ({ x: d.x, y: d.standardPrice })),
                     borderColor: pathColors.standard,
-                    backgroundColor: pathColors.standard + '4D',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 2,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    backgroundColor: pathColors.standard + '33',
                     pointBackgroundColor: pathColors.standard,
-                    pointBorderColor: pathColors.standard,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 8,
                     pointHoverBackgroundColor: pathColors.standard,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 2
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.2
                 });
             }
             
             if (selectedPath === 'all' || selectedPath === 'moderate') {
-                datasets.push({
+                priceChart.data.datasets.push({
                     label: 'Moderate Price',
                     data: chartData.map(d => ({ x: d.x, y: d.moderatePrice })),
                     borderColor: pathColors.moderate,
-                    backgroundColor: pathColors.moderate + '4D',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 2,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    backgroundColor: pathColors.moderate + '33',
                     pointBackgroundColor: pathColors.moderate,
-                    pointBorderColor: pathColors.moderate,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 8,
                     pointHoverBackgroundColor: pathColors.moderate,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 2
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.2
                 });
             }
             
             if (selectedPath === 'all' || selectedPath === 'accelerated') {
-                datasets.push({
+                priceChart.data.datasets.push({
                     label: 'Accelerated Price',
                     data: chartData.map(d => ({ x: d.x, y: d.acceleratedPrice })),
                     borderColor: pathColors.accelerated,
-                    backgroundColor: pathColors.accelerated + '4D',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 2,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    backgroundColor: pathColors.accelerated + '33',
                     pointBackgroundColor: pathColors.accelerated,
-                    pointBorderColor: pathColors.accelerated,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 8,
                     pointHoverBackgroundColor: pathColors.accelerated,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 2
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.2
                 });
             }
 
-            priceChart.data.datasets = datasets;
-            priceChart.update('none');
+            // Add current day reference line as annotation if we have data
+            if (chartData.length > 0) {
+                // Add a vertical line dataset for current day
+                const maxY = Math.max(...chartData.map(d => Math.max(d.standardPrice, d.moderatePrice, d.acceleratedPrice)));
+                priceChart.data.datasets.push({
+                    label: 'Current Day',
+                    data: [
+                        { x: currentDay, y: 0 },
+                        { x: currentDay, y: maxY * 1.1 }
+                    ],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    fill: false,
+                    showLine: true,
+                    tension: 0
+                });
+            }
+
+            priceChart.update('active');
         }
 
         // Initialize chart
@@ -700,9 +725,15 @@
                         intersect: false,
                         mode: 'index'
                     },
+                    hover: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     scales: {
                         x: {
                             type: 'linear',
+                            min: 0,
+                            max: 720,
                             title: {
                                 display: true,
                                 text: 'Days',
@@ -714,6 +745,7 @@
                                 color: '#333'
                             },
                             ticks: {
+                                stepSize: 120,
                                 font: {
                                     family: 'Montserrat, sans-serif',
                                     size: 12
@@ -725,6 +757,7 @@
                             }
                         },
                         y: {
+                            min: 0,
                             title: {
                                 display: true,
                                 text: 'Token Price',
@@ -753,64 +786,70 @@
                     plugins: {
                         tooltip: {
                             enabled: true,
-                            backgroundColor: 'white',
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             titleColor: '#000',
                             bodyColor: '#000',
                             borderColor: '#e0e0e0',
                             borderWidth: 1,
-                            cornerRadius: 4,
+                            cornerRadius: 6,
                             padding: 12,
                             displayColors: true,
                             titleFont: {
-                                family: 'Montserrat, sans-serif',
-                                weight: '600',
+                                family: 'Montserrat',
+                                weight: 600,
                                 size: 13
                             },
                             bodyFont: {
-                                family: 'Montserrat, sans-serif',
-                                weight: '400',
+                                family: 'Montserrat',
+                                weight: 400,
                                 size: 12
                             },
                             callbacks: {
-                                title: function(context) {
-                                    const day = context[0].parsed.x;
-                                    return `Day: ${day} (Month: ${Math.round(day / 30)})`;
+                                title: function(tooltipItems) {
+                                    const day = Math.round(tooltipItems[0].parsed.x);
+                                    const month = Math.round(day / 30);
+                                    return `Day: ${day} (Month: ${month})`;
+                                },
+                                beforeBody: function(tooltipItems) {
+                                    return '';
                                 },
                                 label: function(context) {
-                                    const day = context.parsed.x;
                                     const price = context.parsed.y;
-                                    return `Market Price: ${formatCurrency(price)}`;
+                                    const pathName = context.dataset.label.replace(' Price', '');
+                                    return `${pathName}: ${formatCurrency(price)}`;
                                 },
-                                afterBody: function(context) {
-                                    const day = context[0].parsed.x;
+                                afterLabel: function(context) {
+                                    const day = Math.round(context.parsed.x);
                                     const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
                                     
-                                    if (!dataPoint) return [];
+                                    if (!dataPoint) return '';
                                     
-                                    // Determine which path based on the first dataset in context
-                                    const label = context[0].dataset.label;
+                                    // Determine path
                                     let pathKey = 'standard';
-                                    if (label.includes('Moderate')) pathKey = 'moderate';
-                                    else if (label.includes('Accelerated')) pathKey = 'accelerated';
+                                    if (context.dataset.label.includes('Moderate')) pathKey = 'moderate';
+                                    else if (context.dataset.label.includes('Accelerated')) pathKey = 'accelerated';
                                     
                                     const data = dataPoint[pathKey];
                                     const completedMilestones = Math.min(6, Math.floor((day / pathCompletionDays[pathKey]) * 6));
                                     const progress = Math.min(100, Math.round((day / pathCompletionDays[pathKey]) * 100));
                                     
                                     return [
-                                        '',
-                                        `Treasury Participation: ${data.treasury.toFixed(1)}%`,
-                                        `Long-term Commitments: ${data.commitments.toFixed(1)}%`,
-                                        `Milestones Completed: ${completedMilestones}/6`,
-                                        `Path Progress: ${progress}%`
-                                    ];
+                                        `Treasury: ${data.treasury.toFixed(1)}%`,
+                                        `Commitments: ${data.commitments.toFixed(1)}%`,
+                                        `Milestones: ${completedMilestones}/6`,
+                                        `Progress: ${progress}%`
+                                    ].join('\n');
                                 }
                             }
                         },
                         legend: {
+                            display: true,
+                            position: 'top',
                             labels: {
                                 font: {
-                                    family: 'Montserrat, sans-serif',
+                                    family: 'Montserrat',
                                     size: 12
                                 },
                                 usePointStyle: true,
@@ -820,14 +859,16 @@
                     },
                     elements: {
                         point: {
-                            hoverRadius: 8
+                            radius: 3,
+                            hoverRadius: 8,
+                            hitRadius: 10,
+                            backgroundColor: 'white',
+                            borderWidth: 2
                         },
                         line: {
-                            tension: 0.4
+                            tension: 0.2,
+                            borderWidth: 2
                         }
-                    },
-                    animation: {
-                        duration: 300
                     }
                 }
             });
