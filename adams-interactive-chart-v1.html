@@ -632,8 +632,13 @@
                     fill: true,
                     tension: 0.4,
                     borderWidth: 2,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: pathColors.standard,
+                    pointBorderColor: pathColors.standard,
+                    pointHoverBackgroundColor: pathColors.standard,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2
                 });
             }
             
@@ -646,8 +651,13 @@
                     fill: true,
                     tension: 0.4,
                     borderWidth: 2,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: pathColors.moderate,
+                    pointBorderColor: pathColors.moderate,
+                    pointHoverBackgroundColor: pathColors.moderate,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2
                 });
             }
             
@@ -660,27 +670,17 @@
                     fill: true,
                     tension: 0.4,
                     borderWidth: 2,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: pathColors.accelerated,
+                    pointBorderColor: pathColors.accelerated,
+                    pointHoverBackgroundColor: pathColors.accelerated,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2
                 });
             }
 
             priceChart.data.datasets = datasets;
-            
-            // Update current day line
-            priceChart.options.plugins.annotation = {
-                annotations: {
-                    currentDay: {
-                        type: 'line',
-                        xMin: currentDay,
-                        xMax: currentDay,
-                        borderColor: '#ff6b6b',
-                        borderWidth: 2,
-                        borderDash: [5, 5]
-                    }
-                }
-            };
-            
             priceChart.update('none');
         }
 
@@ -696,6 +696,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
                     scales: {
                         x: {
                             type: 'linear',
@@ -748,6 +752,7 @@
                     },
                     plugins: {
                         tooltip: {
+                            enabled: true,
                             backgroundColor: 'white',
                             titleColor: '#000',
                             bodyColor: '#000',
@@ -755,6 +760,7 @@
                             borderWidth: 1,
                             cornerRadius: 4,
                             padding: 12,
+                            displayColors: true,
                             titleFont: {
                                 family: 'Montserrat, sans-serif',
                                 weight: '600',
@@ -767,36 +773,36 @@
                             },
                             callbacks: {
                                 title: function(context) {
-                                    return `Month: ${Math.round(context[0].parsed.x / 30)}`;
+                                    const day = context[0].parsed.x;
+                                    return `Day: ${day} (Month: ${Math.round(day / 30)})`;
                                 },
                                 label: function(context) {
                                     const day = context.parsed.x;
-                                    const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
-                                    
-                                    if (context.dataset.label === 'Standard Price') {
-                                        return `Market Price: ${formatCurrency(dataPoint.standard.price)}`;
-                                    } else if (context.dataset.label === 'Moderate Price') {
-                                        return `Market Price: ${formatCurrency(dataPoint.moderate.price)}`;
-                                    } else if (context.dataset.label === 'Accelerated Price') {
-                                        return `Market Price: ${formatCurrency(dataPoint.accelerated.price)}`;
-                                    }
-                                    return '';
+                                    const price = context.parsed.y;
+                                    return `Market Price: ${formatCurrency(price)}`;
                                 },
                                 afterBody: function(context) {
                                     const day = context[0].parsed.x;
                                     const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
                                     
-                                    const pathKey = context[0].dataset.label.toLowerCase().includes('standard') ? 'standard' :
-                                                   context[0].dataset.label.toLowerCase().includes('moderate') ? 'moderate' : 'accelerated';
+                                    if (!dataPoint) return [];
+                                    
+                                    // Determine which path based on the first dataset in context
+                                    const label = context[0].dataset.label;
+                                    let pathKey = 'standard';
+                                    if (label.includes('Moderate')) pathKey = 'moderate';
+                                    else if (label.includes('Accelerated')) pathKey = 'accelerated';
                                     
                                     const data = dataPoint[pathKey];
                                     const completedMilestones = Math.min(6, Math.floor((day / pathCompletionDays[pathKey]) * 6));
+                                    const progress = Math.min(100, Math.round((day / pathCompletionDays[pathKey]) * 100));
                                     
                                     return [
+                                        '',
                                         `Treasury Participation: ${data.treasury.toFixed(1)}%`,
                                         `Long-term Commitments: ${data.commitments.toFixed(1)}%`,
                                         `Milestones Completed: ${completedMilestones}/6`,
-                                        `Path Progress: ${Math.min(100, Math.round((day / pathCompletionDays[pathKey]) * 100))}%`
+                                        `Path Progress: ${progress}%`
                                     ];
                                 }
                             }
@@ -806,12 +812,22 @@
                                 font: {
                                     family: 'Montserrat, sans-serif',
                                     size: 12
-                                }
+                                },
+                                usePointStyle: true,
+                                padding: 20
                             }
                         }
                     },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        },
+                        line: {
+                            tension: 0.4
+                        }
+                    },
                     animation: {
-                        duration: 0
+                        duration: 300
                     }
                 }
             });
