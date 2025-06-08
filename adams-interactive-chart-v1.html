@@ -629,17 +629,17 @@
                     label: 'Standard Price',
                     data: chartData.map(d => ({ x: d.x, y: d.standardPrice })),
                     borderColor: pathColors.standard,
-                    backgroundColor: pathColors.standard + '33',
+                    backgroundColor: pathColors.standard + '4D',
                     pointBackgroundColor: pathColors.standard,
-                    pointBorderColor: 'white',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 8,
+                    pointBorderColor: pathColors.standard,
+                    pointBorderWidth: 1,
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
                     pointHoverBackgroundColor: pathColors.standard,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 3,
+                    pointHoverBorderWidth: 2,
                     borderWidth: 2,
-                    fill: false,
+                    fill: true,
                     tension: 0.2
                 });
             }
@@ -649,17 +649,17 @@
                     label: 'Moderate Price',
                     data: chartData.map(d => ({ x: d.x, y: d.moderatePrice })),
                     borderColor: pathColors.moderate,
-                    backgroundColor: pathColors.moderate + '33',
+                    backgroundColor: pathColors.moderate + '4D',
                     pointBackgroundColor: pathColors.moderate,
-                    pointBorderColor: 'white',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 8,
+                    pointBorderColor: pathColors.moderate,
+                    pointBorderWidth: 1,
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
                     pointHoverBackgroundColor: pathColors.moderate,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 3,
+                    pointHoverBorderWidth: 2,
                     borderWidth: 2,
-                    fill: false,
+                    fill: true,
                     tension: 0.2
                 });
             }
@@ -669,17 +669,17 @@
                     label: 'Accelerated Price',
                     data: chartData.map(d => ({ x: d.x, y: d.acceleratedPrice })),
                     borderColor: pathColors.accelerated,
-                    backgroundColor: pathColors.accelerated + '33',
+                    backgroundColor: pathColors.accelerated + '4D',
                     pointBackgroundColor: pathColors.accelerated,
-                    pointBorderColor: 'white',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 8,
+                    pointBorderColor: pathColors.accelerated,
+                    pointBorderWidth: 1,
+                    pointRadius: 1,
+                    pointHoverRadius: 6,
                     pointHoverBackgroundColor: pathColors.accelerated,
                     pointHoverBorderColor: 'white',
-                    pointHoverBorderWidth: 3,
+                    pointHoverBorderWidth: 2,
                     borderWidth: 2,
-                    fill: false,
+                    fill: true,
                     tension: 0.2
                 });
             }
@@ -859,11 +859,11 @@
                     },
                     elements: {
                         point: {
-                            radius: 3,
-                            hoverRadius: 8,
+                            radius: 1,
+                            hoverRadius: 6,
                             hitRadius: 10,
                             backgroundColor: 'white',
-                            borderWidth: 2
+                            borderWidth: 1
                         },
                         line: {
                             tension: 0.2,
