@@ -650,7 +650,7 @@
             return data;
         }
 
-        // Format currency
+        // Format currency - ONLY for Y-axis
         function formatCurrency(value) {
             return new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -658,6 +658,11 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(value);
+        }
+
+        // Format plain number - for X-axis
+        function formatPlainNumber(value) {
+            return parseInt(value).toString();
         }
 
         // Get current data point
