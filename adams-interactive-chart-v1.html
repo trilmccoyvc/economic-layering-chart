@@ -189,8 +189,8 @@
         }
         
         .milestone-dot {
-            width: 5px;
-            height: 5px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             margin-bottom: 4px;
         }
@@ -317,20 +317,176 @@
         
         @media (max-width: 768px) {
             .container {
-                padding: 16px;
+                padding: 12px;
+            }
+            
+            .main-title {
+                font-size: 18px;
+            }
+            
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
             }
             
             .controls-container {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 8px;
+            }
+            
+            .control-button {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 16px;
+                font-size: 14px;
             }
             
             .path-filters {
                 margin-left: 0;
-                margin-top: 8px;
+                margin-top: 0;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .path-button {
+                padding: 8px 12px;
+                font-size: 13px;
+                text-align: center;
+            }
+            
+            .slider-container {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .slider-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                margin-bottom: 16px;
+            }
+            
+            .current-day {
+                font-size: 15px;
+            }
+            
+            .elapsed-time {
+                font-size: 13px;
+            }
+            
+            .timeline-markers {
+                margin-top: 12px;
+            }
+            
+            .milestone-marker {
+                font-size: 10px;
+            }
+            
+            .milestone-dot {
+                width: 6px;
+                height: 6px;
+                margin-bottom: 3px;
             }
             
             .metrics-dashboard {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .metric-card {
+                padding: 12px;
+            }
+            
+            .metric-title {
+                font-size: 15px;
+            }
+            
+            .metric-grid {
+                gap: 6px;
+            }
+            
+            .metric-item {
+                padding: 6px;
+            }
+            
+            .metric-label {
+                font-size: 10px;
+            }
+            
+            .metric-value {
+                font-size: 13px;
+            }
+            
+            .chart-container {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .chart-title {
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
+            }
+            
+            .completion-badge {
+                font-size: 11px;
+                padding: 1px 6px;
+            }
+            
+            .source-text {
+                font-size: 10px;
+                margin-top: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .main-title {
+                font-size: 16px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+            }
+            
+            .control-button {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .path-filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .slider-container {
+                padding: 8px;
+            }
+            
+            .timeline-markers {
+                flex-wrap: wrap;
+                gap: 4px;
+                justify-content: center;
+            }
+            
+            .milestone-marker {
+                font-size: 9px;
+                margin: 2px;
+            }
+            
+            .chart-wrapper {
+                height: 220px;
+            }
+            
+            .metric-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -632,9 +788,9 @@
                     backgroundColor: pathColors.standard + '4D',
                     pointBackgroundColor: pathColors.standard,
                     pointBorderColor: pathColors.standard,
-                    pointBorderWidth: 1,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
                     pointHoverBackgroundColor: pathColors.standard,
                     pointHoverBorderColor: 'white',
                     pointHoverBorderWidth: 2,
@@ -652,9 +808,9 @@
                     backgroundColor: pathColors.moderate + '4D',
                     pointBackgroundColor: pathColors.moderate,
                     pointBorderColor: pathColors.moderate,
-                    pointBorderWidth: 1,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
                     pointHoverBackgroundColor: pathColors.moderate,
                     pointHoverBorderColor: 'white',
                     pointHoverBorderWidth: 2,
@@ -672,9 +828,9 @@
                     backgroundColor: pathColors.accelerated + '4D',
                     pointBackgroundColor: pathColors.accelerated,
                     pointBorderColor: pathColors.accelerated,
-                    pointBorderWidth: 1,
-                    pointRadius: 1,
-                    pointHoverRadius: 6,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
                     pointHoverBackgroundColor: pathColors.accelerated,
                     pointHoverBorderColor: 'white',
                     pointHoverBorderWidth: 2,
@@ -859,11 +1015,11 @@
                     },
                     elements: {
                         point: {
-                            radius: 1,
-                            hoverRadius: 6,
-                            hitRadius: 10,
+                            radius: 0,
+                            hoverRadius: 5,
+                            hitRadius: 15,
                             backgroundColor: 'white',
-                            borderWidth: 1
+                            borderWidth: 0
                         },
                         line: {
                             tension: 0.2,
@@ -968,10 +1124,28 @@
                 setCurrentDay(parseInt(e.target.value));
             });
             
+            // Touch-friendly slider for mobile
+            document.getElementById('timeSlider').addEventListener('touchstart', function(e) {
+                if (isPlaying) {
+                    togglePlayPause();
+                }
+            });
+            
             document.querySelectorAll('.path-button').forEach(btn => {
                 btn.addEventListener('click', function() {
                     setSelectedPath(this.dataset.path);
                 });
+            });
+            
+            // Handle window resize for responsive chart
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (priceChart) {
+                        priceChart.resize();
+                    }
+                }, 250);
             });
             
             // Initial update
