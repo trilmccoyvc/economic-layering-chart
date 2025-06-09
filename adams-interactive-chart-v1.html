@@ -874,6 +874,9 @@
                 y: false
             };
             
+            // Reset any global number formatting that might interfere
+            Chart.defaults.locale = 'en-US';
+            
             priceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
