@@ -785,10 +785,21 @@
 
             const chartData = getChartData();
             
-            // Clear existing datasets
+            // Only update if we have existing datasets, otherwise initialize
+            if (priceChart.data.datasets.length === 0) {
+                initializeDatasets(chartData);
+            } else {
+                // Just update the data points without rebuilding datasets
+                updateExistingDatasets(chartData);
+            }
+
+            priceChart.update('none');
+        }
+
+        // Initialize datasets once
+        function initializeDatasets(chartData) {
             priceChart.data.datasets = [];
             
-            // Add datasets based on selected path
             if (selectedPath === 'all' || selectedPath === 'standard') {
                 priceChart.data.datasets.push({
                     label: 'Standard Price',
@@ -849,9 +860,43 @@
                 });
             }
 
-            // Add current day reference line as annotation if we have data
+            // Add current day reference line
+            addCurrentDayLine(chartData);
+        }
+
+        // Update existing datasets without rebuilding
+        function updateExistingDatasets(chartData) {
+            let datasetIndex = 0;
+            
+            // Update data for existing datasets
+            if (selectedPath === 'all' || selectedPath === 'standard') {
+                if (priceChart.data.datasets[datasetIndex]) {
+                    priceChart.data.datasets[datasetIndex].data = chartData.map(d => ({ x: d.x, y: d.standardPrice }));
+                }
+                datasetIndex++;
+            }
+            
+            if (selectedPath === 'all' || selectedPath === 'moderate') {
+                if (priceChart.data.datasets[datasetIndex]) {
+                    priceChart.data.datasets[datasetIndex].data = chartData.map(d => ({ x: d.x, y: d.moderatePrice }));
+                }
+                datasetIndex++;
+            }
+            
+            if (selectedPath === 'all' || selectedPath === 'accelerated') {
+                if (priceChart.data.datasets[datasetIndex]) {
+                    priceChart.data.datasets[datasetIndex].data = chartData.map(d => ({ x: d.x, y: d.acceleratedPrice }));
+                }
+                datasetIndex++;
+            }
+
+            // Update current day line
+            updateCurrentDayLine(chartData);
+        }
+
+        // Add current day reference line
+        function addCurrentDayLine(chartData) {
             if (chartData.length > 0) {
-                // Add a vertical line dataset for current day
                 const maxY = Math.max(...chartData.map(d => Math.max(d.standardPrice, d.moderatePrice, d.acceleratedPrice)));
                 priceChart.data.datasets.push({
                     label: 'Current Day',
@@ -870,8 +915,19 @@
                     tension: 0
                 });
             }
+        }
 
-            priceChart.update('none');
+        // Update current day line position
+        function updateCurrentDayLine(chartData) {
+            // Find the current day line dataset (should be the last one)
+            const currentDayDataset = priceChart.data.datasets.find(dataset => dataset.label === 'Current Day');
+            if (currentDayDataset && chartData.length > 0) {
+                const maxY = Math.max(...chartData.map(d => Math.max(d.standardPrice, d.moderatePrice, d.acceleratedPrice)));
+                currentDayDataset.data = [
+                    { x: currentDay, y: 0 },
+                    { x: currentDay, y: maxY * 1.1 }
+                ];
+            }
         }
 
         // Initialize chart
@@ -1111,7 +1167,11 @@
                 }
             });
             
-            updateUI();
+            // Force rebuild datasets when path changes
+            if (priceChart) {
+                priceChart.data.datasets = [];
+                updateUI();
+            }
         }
 
         // Event listeners
