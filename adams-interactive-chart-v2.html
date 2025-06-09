@@ -758,14 +758,20 @@
             });
         }
 
-        // Get chart data
+        // Get chart data - modified for category scale
         function getChartData() {
-            return sampleData.filter(d => d.day <= currentDay).map(d => ({
-                x: d.day,
-                standardPrice: d.standard.price,
-                moderatePrice: d.moderate.price,
-                acceleratedPrice: d.accelerated.price
-            }));
+            const dayLabels = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570, 600, 630, 660, 690, 720];
+            const filteredData = sampleData.filter(d => d.day <= currentDay);
+            
+            return dayLabels.slice(0, Math.ceil(currentDay / 30) + 1).map(day => {
+                const dataPoint = sampleData.find(d => d.day === day) || sampleData[0];
+                return {
+                    day: day,
+                    standardPrice: dataPoint.standard.price,
+                    moderatePrice: dataPoint.moderate.price,
+                    acceleratedPrice: dataPoint.accelerated.price
+                };
+            });
         }
 
         // Update chart with no animation
