@@ -639,6 +639,15 @@
                         treasury: standardTreasury,
                         commitments: standardCommitments,
                         progress: Math.min(100, (day / 720) * 100)
+                        animation: {
+                        duration: 0
+                    },
+                    transitions: {
+                        active: {
+                            animation: {
+                                duration: 0
+                            }
+                        }
                     },
                     moderate: {
                         price: moderatePrice,
@@ -862,7 +871,7 @@
                 });
             }
 
-            priceChart.update('active');
+            priceChart.update('none');
         }
 
         // Initialize chart
