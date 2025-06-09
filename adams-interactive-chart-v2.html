@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive ADAMS Timeline Progression</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #ffffff;
+            padding: 0;
+            margin: 0;
+            color: #333;
+        }
+        
+        .container {
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            background-color: white;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .main-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666666;
+            margin: 0 0 24px 0;
+            line-height: 1.4;
+            text-align: left;
+            max-width: 600px;
+        }
+        
+        .controls-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #00528a;
+            background: white;
+            color: #00528a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .control-button.active {
+            background: #00528a;
+            color: white;
+        }
+        
+        .control-button.reset {
+            border-color: #666;
+            color: #666;
+        }
+        
+        .path-filters {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+        
+        .path-button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #d0d0d0;
+            background: #f8f8f8;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        
+        .path-button.active {
+            border-color: #00528a;
+            background: #00528a;
+            color: white;
+        }
+        
+        .slider-container {
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .current-day {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+        
+        .elapsed-time {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00528a;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00528a;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .timeline-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            position: relative;
+        }
+        
+        .milestone-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+        }
+        
+        .milestone-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
+        
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            background-color: white;
+            padding: 16px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .metric-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin: 0;
+            text-transform: capitalize;
+        }
+        
+        .completion-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .metric-item {
+            background-color: #f8f8f8;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            padding: 16px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+        }
+        
+        .chart-wrapper {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        .source-text {
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 16px;
+            line-height: 1.3;
+            text-align: left;
+        }
+        
+        .icon {
+            width: 14px;
+            height: 14px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .main-title {
+                font-size: 18px;
+            }
+            
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+            
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .control-button {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            
+            .path-filters {
+                margin-left: 0;
+                margin-top: 0;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .path-button {
+                padding: 8px 12px;
+                font-size: 13px;
+                text-align: center;
+            }
+            
+            .slider-container {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .slider-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                margin-bottom: 16px;
+            }
+            
+            .current-day {
+                font-size: 15px;
+            }
+            
+            .elapsed-time {
+                font-size: 13px;
+            }
+            
+            .timeline-markers {
+                margin-top: 12px;
+            }
+            
+            .milestone-marker {
+                font-size: 10px;
+            }
+            
+            .milestone-dot {
+                width: 6px;
+                height: 6px;
+                margin-bottom: 3px;
+            }
+            
+            .metrics-dashboard {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .metric-card {
+                padding: 12px;
+            }
+            
+            .metric-title {
+                font-size: 15px;
+            }
+            
+            .metric-grid {
+                gap: 6px;
+            }
+            
+            .metric-item {
+                padding: 6px;
+            }
+            
+            .metric-label {
+                font-size: 10px;
+            }
+            
+            .metric-value {
+                font-size: 13px;
+            }
+            
+            .chart-container {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .chart-title {
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
+            }
+            
+            .completion-badge {
+                font-size: 11px;
+                padding: 1px 6px;
+            }
+            
+            .source-text {
+                font-size: 10px;
+                margin-top: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .main-title {
+                font-size: 16px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+            }
+            
+            .control-button {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .path-filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .slider-container {
+                padding: 8px;
+            }
+            
+            .timeline-markers {
+                flex-wrap: wrap;
+                gap: 4px;
+                justify-content: center;
+            }
+            
+            .milestone-marker {
+                font-size: 9px;
+                margin: 2px;
+            }
+            
+            .chart-wrapper {
+                height: 220px;
+            }
+            
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h1 class="main-title">Interactive ADAMS Timeline Progression</h1>
+        <p class="subtitle">Slide through time to see how different acceleration paths perform over the distribution period</p>
+
+        <!-- Controls -->
+        <div class="controls-container">
+            <button id="playPauseBtn" class="control-button">
+                <span class="icon">▶</span>
+                <span id="playPauseText">Play</span>
+            </button>
+            
+            <button id="resetBtn" class="control-button reset">
+                <span class="icon">↻</span>
+                Reset
+            </button>
+
+            <div class="path-filters">
+                <button class="path-button active" data-path="all">All</button>
+                <button class="path-button" data-path="standard">Standard</button>
+                <button class="path-button" data-path="moderate">Moderate</button>
+                <button class="path-button" data-path="accelerated">Accelerated</button>
+            </div>
+        </div>
+
+        <!-- Time Slider -->
+        <div class="slider-container">
+            <div class="slider-header">
+                <div class="current-day">Day <span id="currentDayDisplay">0</span> / 720</div>
+                <div class="elapsed-time"><span id="monthsElapsed">0</span> months elapsed</div>
+            </div>
+            
+            <input type="range" id="timeSlider" class="slider" min="0" max="720" step="15" value="0">
+
+            <!-- Timeline markers -->
+            <div class="timeline-markers" id="timelineMarkers">
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>Start</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M1</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M2</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M3</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M4</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M5</span>
+                </div>
+                <div class="milestone-marker">
+                    <div class="milestone-dot" style="background-color: #ddd;"></div>
+                    <span>M6</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Metrics Dashboard -->
+        <div class="metrics-dashboard" id="metricsDashboard">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+
+        <!-- Price Chart -->
+        <div class="chart-container">
+            <h3 class="chart-title">Price Evolution Over Time</h3>
+            <div class="chart-wrapper">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Source -->
+        <div class="source-text">
+            Source: Interactive simulation of ADAMS token distribution with sample performance data
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentDay = 0;
+        let isPlaying = false;
+        let selectedPath = 'all';
+        let playInterval = null;
+        let priceChart = null;
+        let sampleData = [];
+
+        // Path colors
+        const pathColors = {
+            standard: '#00528a',
+            moderate: '#20b2aa',
+            accelerated: '#b15bcf'
+        };
+
+        // Path completion days
+        const pathCompletionDays = {
+            standard: 720,
+            moderate: 540,
+            accelerated: 365
+        };
+
+        // Milestones
+        const milestones = [
+            { day: 0, label: 'Start', milestone: 0 },
+            { day: 120, label: 'M1', milestone: 1 },
+            { day: 240, label: 'M2', milestone: 2 },
+            { day: 360, label: 'M3', milestone: 3 },
+            { day: 480, label: 'M4', milestone: 4 },
+            { day: 600, label: 'M5', milestone: 5 },
+            { day: 720, label: 'M6', milestone: 6 }
+        ];
+
+        // Generate sample data
+        function generateSampleData() {
+            const data = [];
+            for (let day = 0; day <= 720; day += 30) {
+                // Standard path data
+                const standardPrice = Math.max(0.30, 0.50 + (day / 720) * 0.80 + Math.sin(day / 120) * 0.15);
+                const standardTreasury = Math.min(60, 15 + (day / 720) * 25 + Math.random() * 5);
+                const standardCommitments = Math.min(40, (day / 720) * 20 + Math.random() * 8);
+
+                // Moderate path data  
+                const moderatePrice = Math.max(0.40, 0.75 + (day / 540) * 0.95 + Math.sin(day / 100) * 0.12);
+                const moderateTreasury = Math.min(65, 25 + (day / 540) * 30 + Math.random() * 6);
+                const moderateCommitments = Math.min(50, (day / 540) * 35 + Math.random() * 10);
+
+                // Accelerated path data
+                const acceleratedPrice = Math.max(0.60, 1.00 + (day / 365) * 1.50 + Math.sin(day / 80) * 0.20);
+                const acceleratedTreasury = Math.min(70, 35 + (day / 365) * 35 + Math.random() * 8);
+                const acceleratedCommitments = Math.min(65, (day / 365) * 50 + Math.random() * 12);
+
+                data.push({
+                    day,
+                    standard: {
+                        price: standardPrice,
+                        treasury: standardTreasury,
+                        commitments: standardCommitments,
+                        progress: Math.min(100, (day / 720) * 100)
+                    },
+                    moderate: {
+                        price: moderatePrice,
+                        treasury: moderateTreasury,
+                        commitments: moderateCommitments,
+                        progress: Math.min(100, (day / 540) * 100)
+                    },
+                    accelerated: {
+                        price: acceleratedPrice,
+                        treasury: acceleratedTreasury,
+                        commitments: acceleratedCommitments,
+                        progress: Math.min(100, (day / 365) * 100)
+                    }
+                });
+            }
+            return data;
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        // Get current data point
+        function getCurrentDataPoint() {
+            return sampleData.find(d => d.day <= currentDay) || sampleData[0];
+        }
+
+        // Get milestone status
+        function getMilestoneStatus(pathKey) {
+            const completionDay = pathCompletionDays[pathKey];
+            const progressRatio = currentDay / completionDay;
+            return Math.min(6, Math.floor(progressRatio * 6));
+        }
+
+        // Update slider background
+        function updateSliderBackground() {
+            const slider = document.getElementById('timeSlider');
+            const percentage = (currentDay / 720) * 100;
+            slider.style.background = `linear-gradient(to right, #00528a 0%, #00528a ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+        }
+
+        // Update timeline markers
+        function updateTimelineMarkers() {
+            const markers = document.querySelectorAll('.milestone-dot');
+            milestones.forEach((milestone, index) => {
+                const dot = markers[index];
+                if (currentDay >= milestone.day) {
+                    dot.style.backgroundColor = '#00528a';
+                    dot.parentElement.style.color = '#00528a';
+                } else {
+                    dot.style.backgroundColor = '#ddd';
+                    dot.parentElement.style.color = '#999';
+                }
+            });
+        }
+
+        // Update metrics dashboard
+        function updateMetricsDashboard() {
+            const dashboard = document.getElementById('metricsDashboard');
+            const currentData = getCurrentDataPoint();
+            
+            dashboard.innerHTML = '';
+
+            Object.entries(pathColors).forEach(([pathKey, color]) => {
+                if (selectedPath !== 'all' && selectedPath !== pathKey) return;
+                
+                const data = currentData[pathKey];
+                const completedMilestones = getMilestoneStatus(pathKey);
+                const isCompleted = currentDay >= pathCompletionDays[pathKey];
+                
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.style.borderLeft = `4px solid ${color}`;
+                card.style.opacity = isCompleted && currentDay > pathCompletionDays[pathKey] ? '0.7' : '1';
+                
+                card.innerHTML = `
+                    <div class="metric-header">
+                        <h3 class="metric-title">${pathKey} Path</h3>
+                        ${isCompleted ? `<span class="completion-badge" style="color: ${color}; background-color: ${color}20;">COMPLETED</span>` : ''}
+                    </div>
+
+                    <div class="metric-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Current Price</div>
+                            <div class="metric-value" style="color: ${color};">${formatCurrency(data.price)}</div>
+                        </div>
+
+                        <div class="metric-item">
+                            <div class="metric-label">Treasury</div>
+                            <div class="metric-value" style="color: ${color};">${data.treasury.toFixed(1)}%</div>
+                        </div>
+
+                        <div class="metric-item">
+                            <div class="metric-label">Commitments</div>
+                            <div class="metric-value" style="color: ${color};">${data.commitments.toFixed(1)}%</div>
+                        </div>
+
+                        <div class="metric-item">
+                            <div class="metric-label">Milestones</div>
+                            <div class="metric-value" style="color: ${color};">${completedMilestones}/6</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="background-color: ${color}; width: ${Math.min(100, (currentDay / pathCompletionDays[pathKey]) * 100)}%;"></div>
+                    </div>
+                    <div class="progress-text">
+                        ${Math.min(100, Math.round((currentDay / pathCompletionDays[pathKey]) * 100))}% Complete
+                    </div>
+                `;
+                
+                dashboard.appendChild(card);
+            });
+        }
+
+        // Get chart data
+        function getChartData() {
+            return sampleData.filter(d => d.day <= currentDay).map(d => ({
+                x: d.day,
+                standardPrice: d.standard.price,
+                moderatePrice: d.moderate.price,
+                acceleratedPrice: d.accelerated.price
+            }));
+        }
+
+        // Update chart with no animation
+        function updateChart() {
+            if (!priceChart) return;
+
+            const chartData = getChartData();
+            
+            // Force disable all animations
+            priceChart.options.animation = false;
+            priceChart.options.animations = false;
+            priceChart.options.transitions = false;
+            
+            // Clear existing datasets
+            priceChart.data.datasets = [];
+            
+            // Add datasets based on selected path
+            if (selectedPath === 'all' || selectedPath === 'standard') {
+                priceChart.data.datasets.push({
+                    label: 'Standard Price',
+                    data: chartData.map(d => ({ x: d.x, y: d.standardPrice })),
+                    borderColor: pathColors.standard,
+                    backgroundColor: pathColors.standard + '4D',
+                    pointBackgroundColor: pathColors.standard,
+                    pointBorderColor: pathColors.standard,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: pathColors.standard,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                });
+            }
+            
+            if (selectedPath === 'all' || selectedPath === 'moderate') {
+                priceChart.data.datasets.push({
+                    label: 'Moderate Price',
+                    data: chartData.map(d => ({ x: d.x, y: d.moderatePrice })),
+                    borderColor: pathColors.moderate,
+                    backgroundColor: pathColors.moderate + '4D',
+                    pointBackgroundColor: pathColors.moderate,
+                    pointBorderColor: pathColors.moderate,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: pathColors.moderate,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                });
+            }
+            
+            if (selectedPath === 'all' || selectedPath === 'accelerated') {
+                priceChart.data.datasets.push({
+                    label: 'Accelerated Price',
+                    data: chartData.map(d => ({ x: d.x, y: d.acceleratedPrice })),
+                    borderColor: pathColors.accelerated,
+                    backgroundColor: pathColors.accelerated + '4D',
+                    pointBackgroundColor: pathColors.accelerated,
+                    pointBorderColor: pathColors.accelerated,
+                    pointBorderWidth: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: pathColors.accelerated,
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                });
+            }
+
+            // Add current day reference line
+            if (chartData.length > 0) {
+                const maxY = Math.max(...chartData.map(d => Math.max(d.standardPrice, d.moderatePrice, d.acceleratedPrice)));
+                priceChart.data.datasets.push({
+                    label: 'Current Day',
+                    data: [
+                        { x: currentDay, y: 0 },
+                        { x: currentDay, y: maxY * 1.1 }
+                    ],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    fill: false,
+                    showLine: true,
+                    tension: 0
+                });
+            }
+
+            priceChart.update('none');
+        }
+
+        // Initialize chart with complete animation disable
+        function initChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            // Force disable Chart.js default animations globally
+            Chart.defaults.animation = false;
+            Chart.defaults.animations = {
+                colors: false,
+                x: false,
+                y: false
+            };
+            
+            // Reset any global number formatting that might interfere
+            Chart.defaults.locale = 'en-US';
+            
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    hover: {
+                        mode: 'index',
+                        intersect: false,
+                        animationDuration: 0
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: 0,
+                            max: 720,
+                            title: {
+                                display: true,
+                                text: 'Days',
+                                font: {
+                                    family: 'Montserrat, sans-serif',
+                                    size: 13,
+                                    weight: '500'
+                                },
+                                color: '#333'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Montserrat, sans-serif',
+                                    size: 12
+                                },
+                                color: '#666',
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#000',
+                            bodyColor: '#000',
+                            borderColor: '#e0e0e0',
+                            borderWidth: 1,
+                            cornerRadius: 6,
+                            padding: 12,
+                            displayColors: true,
+                            animation: false,
+                            titleFont: {
+                                family: 'Montserrat',
+                                weight: 600,
+                                size: 13
+                            },
+                            bodyFont: {
+                                family: 'Montserrat',
+                                weight: 400,
+                                size: 12
+                            },
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const day = Math.round(tooltipItems[0].parsed.x);
+                                    const month = Math.round(day / 30);
+                                    return `Day: ${day} (Month: ${month})`;
+                                },
+                                beforeBody: function(tooltipItems) {
+                                    return '';
+                                },
+                                label: function(context) {
+                                    const price = context.parsed.y;
+                                    const pathName = context.dataset.label.replace(' Price', '');
+                                    return `${pathName}: ${formatCurrency(price)}`;
+                                },
+                                afterLabel: function(context) {
+                                    const day = Math.round(context.parsed.x);
+                                    const dataPoint = sampleData.find(d => d.day <= day) || sampleData[0];
+                                    
+                                    if (!dataPoint) return '';
+                                    
+                                    // Determine path
+                                    let pathKey = 'standard';
+                                    if (context.dataset.label.includes('Moderate')) pathKey = 'moderate';
+                                    else if (context.dataset.label.includes('Accelerated')) pathKey = 'accelerated';
+                                    
+                                    const data = dataPoint[pathKey];
+                                    const completedMilestones = Math.min(6, Math.floor((day / pathCompletionDays[pathKey]) * 6));
+                                    const progress = Math.min(100, Math.round((day / pathCompletionDays[pathKey]) * 100));
+                                    
+                                    return [
+                                        `Treasury: ${data.treasury.toFixed(1)}%`,
+                                        `Commitments: ${data.commitments.toFixed(1)}%`,
+                                        `Milestones: ${completedMilestones}/6`,
+                                        `Progress: ${progress}%`
+                                    ].join('\n');
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Montserrat',
+                                    size: 12
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 0,
+                            hoverRadius: 5,
+                            hitRadius: 15,
+                            backgroundColor: 'white',
+                            borderWidth: 0
+                        },
+                        line: {
+                            tension: 0.2,
+                            borderWidth: 2
+                        }
+                    },
+                    animation: false,
+                    animations: {
+                        colors: false,
+                        x: false,
+                        y: false
+                    },
+                    transitions: {
+                        active: {
+                            animation: false
+                        },
+                        resize: {
+                            animation: false
+                        },
+                        show: {
+                            animation: false
+                        },
+                        hide: {
+                            animation: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            // Update displays
+            document.getElementById('currentDayDisplay').textContent = currentDay;
+            document.getElementById('monthsElapsed').textContent = Math.round(currentDay / 30);
+            document.getElementById('timeSlider').value = currentDay;
+            
+            // Update visual elements
+            updateSliderBackground();
+            updateTimelineMarkers();
+            updateMetricsDashboard();
+            updateChart();
+        }
+
+        // Set current day
+        function setCurrentDay(day) {
+            currentDay = Math.max(0, Math.min(720, day));
+            updateUI();
+        }
+
+        // Play/pause functionality
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            
+            const btn = document.getElementById('playPauseBtn');
+            const icon = btn.querySelector('.icon');
+            const text = document.getElementById('playPauseText');
+            
+            if (isPlaying) {
+                icon.textContent = '⏸';
+                text.textContent = 'Pause';
+                btn.classList.add('active');
+                
+                playInterval = setInterval(() => {
+                    if (currentDay >= 720) {
+                        togglePlayPause();
+                        return;
+                    }
+                    setCurrentDay(currentDay + 15);
+                }, 200);
+            } else {
+                icon.textContent = '▶';
+                text.textContent = 'Play';
+                btn.classList.remove('active');
+                
+                if (playInterval) {
+                    clearInterval(playInterval);
+                    playInterval = null;
+                }
+            }
+        }
+
+        // Reset timeline
+        function resetTimeline() {
+            if (isPlaying) {
+                togglePlayPause();
+            }
+            setCurrentDay(0);
+        }
+
+        // Set selected path
+        function setSelectedPath(path) {
+            selectedPath = path;
+            
+            // Update button states
+            document.querySelectorAll('.path-button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.path === path) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            updateUI();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate sample data
+            sampleData = generateSampleData();
+            
+            // Initialize chart
+            initChart();
+            
+            // Set up event listeners
+            document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+            document.getElementById('resetBtn').addEventListener('click', resetTimeline);
+            
+            document.getElementById('timeSlider').addEventListener('input', function(e) {
+                if (isPlaying) {
+                    togglePlayPause();
+                }
+                setCurrentDay(parseInt(e.target.value));
+            });
+            
+            // Touch-friendly slider for mobile
+            document.getElementById('timeSlider').addEventListener('touchstart', function(e) {
+                if (isPlaying) {
+                    togglePlayPause();
+                }
+            });
+            
+            document.querySelectorAll('.path-button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setSelectedPath(this.dataset.path);
+                });
+            });
+            
+            // Handle window resize for responsive chart
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (priceChart) {
+                        priceChart.resize();
+                    }
+                }, 250);
+            });
+            
+            // Initial update
+            updateUI();
+        });
+    </script>
+</body>
+</html>: {
+                                stepSize: 120,
+                                font: {
+                                    family: 'Montserrat, sans-serif',
+                                    size: 12
+                                },
+                                color: '#666'
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            title: {
+                                display: true,
+                                text: 'Token Price',
+                                font: {
+                                    family: 'Montserrat, sans-serif',
+                                    size: 13,
+                                    weight: '500'
+                                },
+                                color: '#333'
+                            },
+                            ticks
