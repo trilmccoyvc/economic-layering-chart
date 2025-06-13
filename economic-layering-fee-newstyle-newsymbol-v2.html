@@ -494,16 +494,24 @@
                                     }
                                 },
                                 y: {
-                                    min: 0,
-                                    max: 192,
-                                    title: {
-                                        display: true,
-                                        text: 'Value (USD)',
-                                        font: {
-                                            family: 'Montserrat, sans-serif',
-                                            weight: '500',
-                                            size: 13
-                                        },
+    min: 0,
+    max: 192,
+    title: {
+        display: true,
+        text: 'Value (USD)',
+        font: {
+            family: 'Montserrat, sans-serif',
+            weight: '500',
+            size: 13
+        },
+        padding: {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 4  // Menambahkan jarak 4px ke kanan
+        }
+    }
+}
                                         color: '#333'
                                     },
                                     ticks: {
