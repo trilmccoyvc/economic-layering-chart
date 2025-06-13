@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Economic Layering Chart</title>
+    <title>Economic Layering with Fee Revenue</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,70 +56,133 @@
             max-width: 600px;
         }
         
-        /* Button styling with Economist sensibilities */
-        .button-container {
+        /* Controls styling with Economist sensibilities */
+        .controls {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 16px;
         }
         
-        .toggle-button {
+        .view-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn {
             padding: 8px 16px;
             border-radius: 4px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             border: 1px solid #d0d0d0;
-            background: #f8f8f8;
-            color: #333;
         }
         
-        .toggle-button.active {
-            background: #00528a;
+        .btn-primary {
+            background-color: #00528a;
             color: white;
             border-color: #00528a;
         }
         
-        .toggle-button:hover {
+        .btn-primary:hover {
+            background-color: #003d6b;
+        }
+        
+        .btn-secondary {
+            background-color: #f8f8f8;
+            color: #333;
+            border-color: #d0d0d0;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8e8e8;
             border-color: #00528a;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .zoom-info {
+            font-size: 11px;
+            color: #888;
+            font-weight: 400;
+        }
+        
+        .btn-reset {
+            padding: 6px 12px;
+            font-size: 11px;
+            background-color: #f8f8f8;
+            color: #666;
+            border-radius: 4px;
+            border: 1px solid #d0d0d0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-reset:hover:not(:disabled) {
+            background-color: #e8e8e8;
+            border-color: #b0b0b0;
+        }
+        
+        .btn-reset:disabled {
+            background-color: #f3f3f3;
+            color: #ccc;
+            cursor: not-allowed;
         }
         
         /* Chart area styling */
         .chart-wrapper {
-            margin-bottom: 16px;
+            background-color: white;
             border: 1px solid #e0e0e0;
-            background: white;
+            border-radius: 4px;
+            overflow: hidden;
         }
         
-        /* Legend styling - Economist approach */
-        .custom-legend {
+        /* Legend styling */
+        .chart-legend {
             display: flex;
             flex-wrap: wrap;
-            gap: 16px 20px;
-            margin-top: 12px;
-            font-size: 12px;
-            font-weight: 400;
-            color: #333;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+            padding: 16px;
+            border-top: 1px solid #e0e0e0;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            color: #333;
         }
         
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+        .legend-color {
+            width: 16px;
+            height: 3px;
+            border-radius: 1px;
         }
         
-        .legend-square {
-            width: 10px;
-            height: 10px;
+        .legend-color.dashed {
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                transparent,
+                transparent 3px,
+                currentColor 3px,
+                currentColor 6px
+            );
         }
         
         /* Source/notes styling */
@@ -127,7 +190,7 @@
             font-size: 11px;
             font-weight: 400;
             color: #888;
-            margin-top: 12px;
+            margin-top: 16px;
             line-height: 1.3;
             text-align: left;
         }
@@ -145,414 +208,470 @@
                 font-size: 13px;
             }
             
-            .button-container {
+            .controls {
                 flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
             }
             
-            .toggle-button {
-                width: 100%;
+            .view-controls {
                 justify-content: center;
             }
             
-            .custom-legend {
+            .btn {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .zoom-controls {
                 justify-content: center;
-                gap: 12px 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="economic-layering-chart"></div>
+    <div id="fee-revenue-chart"></div>
 
     <script>
         // CEK LIBRARIES
         if (typeof React === 'undefined') {
-            document.getElementById('economic-layering-chart').innerHTML = 
+            document.getElementById('fee-revenue-chart').innerHTML = 
                 '<div style="padding: 20px; text-align: center; color: red;">React belum loaded</div>';
             throw new Error('React not loaded');
         }
 
         if (typeof Chart === 'undefined') {
-            document.getElementById('economic-layering-chart').innerHTML = 
+            document.getElementById('fee-revenue-chart').innerHTML = 
                 '<div style="padding: 20px; text-align: center; color: red;">Chart.js belum loaded</div>';
             throw new Error('Chart.js not loaded');
         }
 
-        const { useState, useEffect, useRef } = React;
+        const { useState, useRef } = React;
 
-        // Component dengan styling Economist
+        // Data yang sama persis dengan aslinya
+        const initialData = [
+            { name: 'Jan', trading: 4000, staking: 2400, lending: 1800, txFees: 1200, total: 9400, market: 100 },
+            { name: 'Feb', trading: 3500, staking: 2500, lending: 2000, txFees: 1300, total: 9300, market: 95 },
+            { name: 'Mar', trading: 3000, staking: 2600, lending: 2200, txFees: 1400, total: 9200, market: 90 },
+            { name: 'Apr', trading: 2000, staking: 2700, lending: 2300, txFees: 1500, total: 8500, market: 70 },
+            { name: 'May', trading: 1800, staking: 2800, lending: 2500, txFees: 1600, total: 8700, market: 65 },
+            { name: 'Jun', trading: 1600, staking: 2900, lending: 2700, txFees: 1700, total: 8900, market: 68 },
+            { name: 'Jul', trading: 1400, staking: 3000, lending: 2900, txFees: 1800, total: 9100, market: 75 },
+            { name: 'Aug', trading: 1700, staking: 3100, lending: 3100, txFees: 1900, total: 9800, market: 85 },
+            { name: 'Sep', trading: 2000, staking: 3200, lending: 3300, txFees: 2000, total: 10500, market: 90 },
+            { name: 'Oct', trading: 2300, staking: 3300, lending: 3400, txFees: 2100, total: 11100, market: 95 },
+            { name: 'Nov', trading: 2600, staking: 3400, lending: 3300, txFees: 2200, total: 11500, market: 98 },
+            { name: 'Dec', trading: 3000, staking: 3500, lending: 3200, txFees: 2300, total: 12000, market: 100 },
+        ];
+
+        // Warna yang sama persis dengan aslinya
+        const colors = {
+            trading: '#b15bcf',    // tertiary - ungu
+            staking: '#00528a',    // secondary - biru tua
+            lending: '#20b2aa',    // primary - hijau toska
+            txFees: '#25d0c7',     // hover - toska lebih terang
+            market: '#FF6347'      // warna tambahan untuk market indicator (merah)
+        };
+
         const EconomicLayeringChart = () => {
-            const [marketCondition, setMarketCondition] = useState('normal');
-            const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+            const [viewType, setViewType] = useState('stacked');
+            const [data, setData] = useState(initialData);
+            const [refAreaLeft, setRefAreaLeft] = useState('');
+            const [refAreaRight, setRefAreaRight] = useState('');
+            const [isZooming, setIsZooming] = useState(false);
+            const [tooltipInfo, setTooltipInfo] = useState(null);
             const chartRef = useRef(null);
             const chartInstance = useRef(null);
             
-            // Track window width for responsive design
-            useEffect(() => {
-                const handleResize = () => {
-                    setWindowWidth(window.innerWidth);
-                };
-                
-                window.addEventListener('resize', handleResize);
-                return () => window.removeEventListener('resize', handleResize);
-            }, []);
-            
-            const isMobile = windowWidth < 640;
-            
-            // Data yang sama persis dengan aslinya
-            const generateNormalMarketData = () => {
-                return [
-                    { month: 0, marketPrice: 100, costToMint: 83, combinedRevenue: 117 },
-                    { month: 3, marketPrice: 115, costToMint: 88, combinedRevenue: 140 },
-                    { month: 6, marketPrice: 122, costToMint: 94, combinedRevenue: 140 },
-                    { month: 9, marketPrice: 100, costToMint: 96, combinedRevenue: 110 },
-                    { month: 12, marketPrice: 103, costToMint: 90, combinedRevenue: 120 },
-                    { month: 15, marketPrice: 130, costToMint: 92, combinedRevenue: 160 },
-                    { month: 18, marketPrice: 135, costToMint: 97, combinedRevenue: 160 },
-                    { month: 21, marketPrice: 100, costToMint: 103, combinedRevenue: 105 },
-                    { month: 24, marketPrice: 110, costToMint: 108, combinedRevenue: 145 },
-                    { month: 27, marketPrice: 140, costToMint: 110, combinedRevenue: 165 },
-                    { month: 30, marketPrice: 150, costToMint: 108, combinedRevenue: 170 },
-                    { month: 33, marketPrice: 140, costToMint: 106, combinedRevenue: 170 },
-                    { month: 36, marketPrice: 130, costToMint: 105, combinedRevenue: 170 }
-                ];
+            // Informasi untuk tooltip edukatif yang sama dengan aslinya
+            const educationalInfo = {
+                trading: "Revenue from trading fees, which varies with market volatility",
+                staking: "More stable revenue from users staking their assets",
+                lending: "Interest income from lending services",
+                txFees: "Base transaction fees that remain consistent in any market",
+                market: "Market benchmark indicator (not a revenue source)"
             };
-            
-            const generateDownturnMarketData = () => {
-                return [
-                    { month: 0, marketPrice: 100, costToMint: 83, combinedRevenue: 115 },
-                    { month: 3, marketPrice: 115, costToMint: 88, combinedRevenue: 140 },
-                    { month: 6, marketPrice: 122, costToMint: 94, combinedRevenue: 144 },
-                    { month: 9, marketPrice: 95, costToMint: 96, combinedRevenue: 110 },
-                    { month: 12, marketPrice: 103, costToMint: 90, combinedRevenue: 120 },
-                    { month: 15, marketPrice: 140, costToMint: 92, combinedRevenue: 165 },
-                    { month: 18, marketPrice: 125, costToMint: 93, combinedRevenue: 155 },
-                    { month: 19, marketPrice: 100, costToMint: 95, combinedRevenue: 120 },
-                    { month: 20, marketPrice: 80, costToMint: 97, combinedRevenue: 95 },
-                    { month: 21, marketPrice: 55, costToMint: 100, combinedRevenue: 75 },
-                    { month: 22, marketPrice: 45, costToMint: 102, combinedRevenue: 70 },
-                    { month: 23, marketPrice: 50, costToMint: 105, combinedRevenue: 77 },
-                    { month: 24, marketPrice: 100, costToMint: 107, combinedRevenue: 135 },
-                    { month: 27, marketPrice: 125, costToMint: 108, combinedRevenue: 145 },
-                    { month: 30, marketPrice: 130, costToMint: 106, combinedRevenue: 150 },
-                    { month: 33, marketPrice: 135, costToMint: 105, combinedRevenue: 160 },
-                    { month: 36, marketPrice: 130, costToMint: 104, combinedRevenue: 165 }
-                ];
+
+            // Fungsi untuk reset zoom
+            const resetZoom = () => {
+                setData(initialData);
+                setRefAreaLeft('');
+                setRefAreaRight('');
             };
-            
-            const getCurrentData = () => marketCondition === 'normal' ? generateNormalMarketData() : generateDownturnMarketData();
-            
-            // Plugin untuk menambah area shading pada market downturn
-            const marketDownturnPlugin = {
-                id: 'marketDownturn',
-                beforeDraw: (chart) => {
-                    if (marketCondition === 'downturn') {
-                        const ctx = chart.ctx;
-                        const chartArea = chart.chartArea;
-                        const xScale = chart.scales.x;
-                        
-                        // Area shading untuk market downturn (month 19-24)
-                        const startX = xScale.getPixelForValue(19);
-                        const endX = xScale.getPixelForValue(24);
-                        
-                        ctx.save();
-                        ctx.fillStyle = 'rgba(255, 214, 224, 0.3)'; // #ffd6e0 dengan opacity
-                        ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
-                        
-                        // Label "Market Downturn" with Economist styling
-                        ctx.fillStyle = '#00528a';
-                        ctx.font = `600 ${isMobile ? '11px' : '12px'} Montserrat, sans-serif`;
-                        ctx.textAlign = 'center';
-                        ctx.fillText('Market Downturn', (startX + endX) / 2, chartArea.top + 18);
-                        
-                        ctx.restore();
-                    }
-                }
-            };
-            
+
             // Create chart dengan styling Economist
-            useEffect(() => {
+            React.useEffect(() => {
                 if (chartRef.current) {
-                    // Destroy existing chart
                     if (chartInstance.current) {
                         chartInstance.current.destroy();
                     }
                     
                     const ctx = chartRef.current.getContext('2d');
-                    const data = getCurrentData();
                     
-                    // Calculate fill data untuk area charts
-                    const fillData = data.map(d => ({
-                        x: d.month,
-                        feeRevenueTop: d.combinedRevenue,
-                        feeRevenueBottom: d.marketPrice,
-                        profitTop: d.marketPrice,
-                        profitBottom: d.costToMint
-                    }));
-                    
-                    chartInstance.current = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.map(d => d.month),
-                            datasets: [
-                                // Area untuk Fee Revenue Layer - warna sama persis
-                                {
-                                    label: 'Fee Revenue Layer',
-                                    data: fillData.map(d => ({ x: d.x, y: d.feeRevenueTop })),
-                                    backgroundColor: 'rgba(177, 91, 207, 0.6)',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    fill: '+1',
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 6
-                                },
-                                {
-                                    label: '',
-                                    data: fillData.map(d => ({ x: d.x, y: d.feeRevenueBottom })),
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    fill: false,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 5
-                                },
-                                // Area untuk Profit Region - warna sama persis
-                                {
-                                    label: 'Profit Region',
-                                    data: fillData.map(d => ({ x: d.x, y: d.profitTop })),
-                                    backgroundColor: 'rgba(32, 178, 170, 0.6)',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    fill: '+1',
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 4
-                                },
-                                {
-                                    label: '',
-                                    data: fillData.map(d => ({ x: d.x, y: d.profitBottom })),
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'transparent',
-                                    borderWidth: 0,
-                                    fill: false,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 3
-                                },
-                                // Lines dengan warna sama persis
-                                {
-                                    label: 'Market Price',
-                                    data: data.map(d => ({ x: d.month, y: d.marketPrice })),
-                                    borderColor: '#00528a',
-                                    backgroundColor: '#00528a',
-                                    borderWidth: isMobile ? 1.5 : 2,
-                                    fill: false,
-                                    pointRadius: isMobile ? 1.5 : 2,
-                                    pointHoverRadius: isMobile ? 4 : 6,
-                                    pointBackgroundColor: '#00528a',
-                                    pointBorderColor: '#00528a',
-                                    order: 2
-                                },
-                                {
-                                    label: 'Cost to Mint',
-                                    data: data.map(d => ({ x: d.month, y: d.costToMint })),
-                                    borderColor: '#b15bcf',
-                                    backgroundColor: '#b15bcf',
-                                    borderWidth: isMobile ? 1.5 : 2,
-                                    borderDash: [5, 5],
-                                    fill: false,
-                                    pointRadius: isMobile ? 1.5 : 2,
-                                    pointHoverRadius: isMobile ? 4 : 6,
-                                    pointBackgroundColor: '#b15bcf',
-                                    pointBorderColor: '#b15bcf',
-                                    order: 1
-                                },
-                                {
-                                    label: 'Combined Revenue',
-                                    data: data.map(d => ({ x: d.month, y: d.combinedRevenue })),
-                                    borderColor: '#20b2aa',
-                                    backgroundColor: '#20b2aa',
-                                    borderWidth: isMobile ? 1.5 : 2,
-                                    fill: false,
-                                    pointRadius: isMobile ? 1.5 : 2,
-                                    pointHoverRadius: isMobile ? 4 : 6,
-                                    pointBackgroundColor: '#20b2aa',
-                                    pointBorderColor: '#20b2aa',
-                                    order: 0
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                intersect: false,
-                                mode: 'index'
-                            },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    backgroundColor: 'white',
-                                    titleColor: '#000',
-                                    bodyColor: '#000',
-                                    borderColor: '#e0e0e0',
-                                    borderWidth: 1,
-                                    cornerRadius: 4,
-                                    titleFont: {
-                                        family: 'Montserrat, sans-serif',
-                                        weight: 600,
-                                        size: 13
+                    if (viewType === 'stacked') {
+                        // Stacked Area Chart
+                        chartInstance.current = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.map(d => d.name),
+                                datasets: [
+                                    {
+                                        label: 'Transaction Fees',
+                                        data: data.map(d => d.txFees),
+                                        backgroundColor: colors.txFees,
+                                        borderColor: colors.txFees,
+                                        borderWidth: 1,
+                                        fill: true,
+                                        order: 4
                                     },
-                                    bodyFont: {
-                                        family: 'Montserrat, sans-serif',
-                                        weight: 400,
-                                        size: 12
+                                    {
+                                        label: 'Lending Revenue',
+                                        data: data.map((d, i) => d.lending + data[i].txFees),
+                                        backgroundColor: colors.lending,
+                                        borderColor: colors.lending,
+                                        borderWidth: 1,
+                                        fill: '-1',
+                                        order: 3
                                     },
-                                    callbacks: {
-                                        title: function(context) {
-                                            return `Month: ${context[0].label}`;
-                                        },
-                                        label: function(context) {
-                                            const dataIndex = context.dataIndex;
-                                            const dataPoint = data[dataIndex];
-                                            
-                                            // Format currency function
-                                            const formatCurrency = (value) => {
-                                                return new Intl.NumberFormat('en-US', {
-                                                    style: 'currency',
-                                                    currency: 'USD',
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }).format(value);
-                                            };
-                                            
-                                            if (context.dataset.label === 'Market Price') {
-                                                return `Market Price: ${formatCurrency(dataPoint.marketPrice)}`;
-                                            } else if (context.dataset.label === 'Cost to Mint') {
-                                                return `Cost to Mint: ${formatCurrency(dataPoint.costToMint)}`;
-                                            } else if (context.dataset.label === 'Combined Revenue') {
-                                                return `Combined Revenue: ${formatCurrency(dataPoint.combinedRevenue)}`;
-                                            }
-                                            return '';
-                                        },
-                                        afterBody: function(context) {
-                                            const dataIndex = context[0].dataIndex;
-                                            const dataPoint = data[dataIndex];
-                                            const feeRevenue = dataPoint.combinedRevenue - dataPoint.marketPrice;
-                                            const profit = dataPoint.marketPrice - dataPoint.costToMint;
-                                            
-                                            // Format currency function
-                                            const formatCurrency = (value) => {
-                                                return new Intl.NumberFormat('en-US', {
-                                                    style: 'currency',
-                                                    currency: 'USD',
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }).format(value);
-                                            };
-                                            
-                                            return [
-                                                `Fee Revenue: ${formatCurrency(feeRevenue)}`,
-                                                `Profit: ${formatCurrency(profit)}`
-                                            ];
-                                        }
+                                    {
+                                        label: 'Staking Revenue',
+                                        data: data.map((d, i) => d.staking + d.lending + data[i].txFees),
+                                        backgroundColor: colors.staking,
+                                        borderColor: colors.staking,
+                                        borderWidth: 1,
+                                        fill: '-1',
+                                        order: 2
+                                    },
+                                    {
+                                        label: 'Trading Revenue',
+                                        data: data.map((d, i) => d.trading + d.staking + d.lending + data[i].txFees),
+                                        backgroundColor: colors.trading,
+                                        borderColor: colors.trading,
+                                        borderWidth: 1,
+                                        fill: '-1',
+                                        order: 1
+                                    },
+                                    {
+                                        label: 'Market Performance',
+                                        data: data.map(d => d.market),
+                                        borderColor: colors.market,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        borderDash: [5, 5],
+                                        fill: false,
+                                        pointRadius: 0,
+                                        order: 0
                                     }
-                                }
+                                ]
                             },
-                            scales: {
-                                x: {
-                                    type: 'linear',
-                                    min: 0,
-                                    max: 36,
-                                    title: {
-                                        display: true,
-                                        text: 'Time (months)',
-                                        font: {
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    intersect: false,
+                                    mode: 'index'
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'white',
+                                        titleColor: '#000',
+                                        bodyColor: '#000',
+                                        borderColor: '#e0e0e0',
+                                        borderWidth: 1,
+                                        cornerRadius: 4,
+                                        titleFont: {
                                             family: 'Montserrat, sans-serif',
-                                            weight: '500',
+                                            weight: 600,
                                             size: 13
                                         },
-                                        color: '#333'
-                                    },
-                                    ticks: {
-                                        stepSize: 6,
-                                        font: {
+                                        bodyFont: {
                                             family: 'Montserrat, sans-serif',
-                                            weight: '400',
+                                            weight: 400,
                                             size: 12
                                         },
-                                        color: '#666'
-                                    },
-                                    grid: {
-                                        color: '#e0e0e0',
-                                        drawBorder: true,
-                                        borderColor: '#333'
+                                        callbacks: {
+                                            label: function(context) {
+                                                const dataIndex = context.dataIndex;
+                                                const dataPoint = initialData[dataIndex];
+                                                
+                                                // Format currency function
+                                                const formatCurrency = (value) => {
+                                                    return new Intl.NumberFormat('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: 0
+                                                    }).format(value);
+                                                };
+                                                
+                                                if (context.dataset.label === 'Transaction Fees') {
+                                                    return `Transaction Fees: ${formatCurrency(dataPoint.txFees)}`;
+                                                } else if (context.dataset.label === 'Lending Revenue') {
+                                                    return `Lending Revenue: ${formatCurrency(dataPoint.lending)}`;
+                                                } else if (context.dataset.label === 'Staking Revenue') {
+                                                    return `Staking Revenue: ${formatCurrency(dataPoint.staking)}`;
+                                                } else if (context.dataset.label === 'Trading Revenue') {
+                                                    return `Trading Revenue: ${formatCurrency(dataPoint.trading)}`;
+                                                } else if (context.dataset.label === 'Market Performance') {
+                                                    return `Market Performance: ${dataPoint.market}`;
+                                                }
+                                                return '';
+                                            }
+                                        }
                                     }
                                 },
-                                y: {
-    min: 0,
-    max: 192,
-    title: {
-        display: true,
-        text: 'Value (USD)',
-        font: {
-            family: 'Montserrat, sans-serif',
-            weight: '500',
-            size: 13
-        },
-        padding: {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 15  // Menambahkan jarak 4px ke kanan
-        }
-    }
-}
-                                        color: '#333'
-                                    },
-                                    ticks: {
-                                        stepSize: 38,
-                                        font: {
-                                            family: 'Montserrat, sans-serif',
-                                            weight: '400',
-                                            size: 12
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Month',
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '500',
+                                                size: 13
+                                            },
+                                            color: '#333'
                                         },
-                                        color: '#666',
-                                        callback: function(value) {
-                                            return new Intl.NumberFormat('en-US', {
-                                                style: 'currency',
-                                                currency: 'USD',
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 0
-                                            }).format(value);
+                                        ticks: {
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '400',
+                                                size: 12
+                                            },
+                                            color: '#666'
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0',
+                                            drawBorder: true,
+                                            borderColor: '#333'
                                         }
                                     },
-                                    grid: {
-                                        color: '#e0e0e0',
-                                        drawBorder: true,
-                                        borderColor: '#333'
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Revenue (USD)',
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '500',
+                                                size: 13
+                                            },
+                                            color: '#333'
+                                        },
+                                        ticks: {
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '400',
+                                                size: 12
+                                            },
+                                            color: '#666',
+                                            callback: function(value) {
+                                                return new Intl.NumberFormat('en-US', {
+                                                    style: 'currency',
+                                                    currency: 'USD',
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0,
+                                                    notation: value >= 1000 ? 'compact' : 'standard'
+                                                }).format(value);
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0',
+                                            drawBorder: true,
+                                            borderColor: '#333'
+                                        }
                                     }
                                 }
                             }
-                        },
-                        plugins: [marketDownturnPlugin]
-                    });
+                        });
+                    } else {
+                        // Line Chart
+                        chartInstance.current = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.map(d => d.name),
+                                datasets: [
+                                    {
+                                        label: 'Transaction Fees',
+                                        data: data.map(d => d.txFees),
+                                        borderColor: colors.txFees,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Lending Revenue',
+                                        data: data.map(d => d.lending),
+                                        borderColor: colors.lending,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Staking Revenue',
+                                        data: data.map(d => d.staking),
+                                        borderColor: colors.staking,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Trading Revenue',
+                                        data: data.map(d => d.trading),
+                                        borderColor: colors.trading,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Total Revenue',
+                                        data: data.map(d => d.total),
+                                        borderColor: '#8884d8',
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 3,
+                                        fill: false
+                                    },
+                                    {
+                                        label: 'Market Performance',
+                                        data: data.map(d => d.market),
+                                        borderColor: colors.market,
+                                        backgroundColor: 'transparent',
+                                        borderWidth: 2,
+                                        borderDash: [5, 5],
+                                        fill: false
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    intersect: false,
+                                    mode: 'index'
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'white',
+                                        titleColor: '#000',
+                                        bodyColor: '#000',
+                                        borderColor: '#e0e0e0',
+                                        borderWidth: 1,
+                                        cornerRadius: 4,
+                                        titleFont: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: 600,
+                                            size: 13
+                                        },
+                                        bodyFont: {
+                                            family: 'Montserrat, sans-serif',
+                                            weight: 400,
+                                            size: 12
+                                        },
+                                        callbacks: {
+                                            label: function(context) {
+                                                // Format currency function
+                                                const formatCurrency = (value) => {
+                                                    return new Intl.NumberFormat('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: 0
+                                                    }).format(value);
+                                                };
+                                                
+                                                const value = context.parsed.y;
+                                                const label = context.dataset.label;
+                                                
+                                                if (label === 'Market Performance') {
+                                                    return `${label}: ${value}`;
+                                                } else {
+                                                    return `${label}: ${formatCurrency(value)}`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Month',
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '500',
+                                                size: 13
+                                            },
+                                            color: '#333'
+                                        },
+                                        ticks: {
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '400',
+                                                size: 12
+                                            },
+                                            color: '#666'
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0',
+                                            drawBorder: true,
+                                            borderColor: '#333'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Value (USD)',
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '500',
+                                                size: 13
+                                            },
+                                            color: '#333'
+                                        },
+                                        ticks: {
+                                            font: {
+                                                family: 'Montserrat, sans-serif',
+                                                weight: '400',
+                                                size: 12
+                                            },
+                                            color: '#666',
+                                            callback: function(value) {
+                                                return new Intl.NumberFormat('en-US', {
+                                                    style: 'currency',
+                                                    currency: 'USD',
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0,
+                                                    notation: value >= 1000 ? 'compact' : 'standard'
+                                                }).format(value);
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#e0e0e0',
+                                            drawBorder: true,
+                                            borderColor: '#333'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
-            }, [marketCondition, isMobile]);
-            
+            }, [viewType, data]);
+
             // Cleanup
-            useEffect(() => {
+            React.useEffect(() => {
                 return () => {
                     if (chartInstance.current) {
                         chartInstance.current.destroy();
                     }
                 };
             }, []);
-            
+
             return React.createElement('div', {
                 className: 'chart-container'
             }, [
@@ -565,143 +684,147 @@
                 React.createElement('p', {
                     key: 'subtitle',
                     className: 'chart-subtitle'
-                }, 'Visualizing how the 1:1:1:1 model creates economic resilience through layered revenue streams'),
+                }, 'Shows how different revenue layers create resilience against market volatility'),
                 
-                // Toggle buttons with Economist styling
+                // Controls dengan styling Economist
                 React.createElement('div', {
-                    key: 'buttons',
-                    className: 'button-container'
+                    key: 'controls',
+                    className: 'controls'
                 }, [
-                    React.createElement('button', {
-                        key: 'normal-btn',
-                        className: `toggle-button ${marketCondition === 'normal' ? 'active' : ''}`,
-                        onClick: () => setMarketCondition('normal')
-                    }, 'Normal Market'),
+                    React.createElement('div', {
+                        key: 'view-controls',
+                        className: 'view-controls'
+                    }, [
+                        React.createElement('button', {
+                            key: 'stacked-btn',
+                            className: viewType === 'stacked' ? 'btn btn-primary' : 'btn btn-secondary',
+                            onClick: () => setViewType('stacked')
+                        }, 'Stacked Area'),
+                        React.createElement('button', {
+                            key: 'line-btn',
+                            className: viewType === 'line' ? 'btn btn-primary' : 'btn btn-secondary',
+                            onClick: () => setViewType('line')
+                        }, 'Line Chart')
+                    ]),
                     
-                    React.createElement('button', {
-                        key: 'downturn-btn',
-                        className: `toggle-button ${marketCondition === 'downturn' ? 'active' : ''}`,
-                        onClick: () => setMarketCondition('downturn')
-                    }, 'Market Downturn')
+                    React.createElement('div', {
+                        key: 'zoom-controls',
+                        className: 'zoom-controls'
+                    }, [
+                        React.createElement('button', {
+                            key: 'reset-btn',
+                            className: 'btn-reset',
+                            onClick: resetZoom,
+                            disabled: data.length === initialData.length
+                        }, 'Reset Zoom'),
+                        React.createElement('span', {
+                            key: 'zoom-info',
+                            className: 'zoom-info'
+                        }, isZooming ? 'Select end point...' : 'Drag to zoom')
+                    ])
                 ]),
                 
                 // Chart container
                 React.createElement('div', {
                     key: 'chart-wrapper',
-                    className: 'chart-wrapper',
-                    style: {
-                        width: '100%',
-                        height: isMobile ? '320px' : '400px',
-                        padding: '16px'
-                    }
-                }, 
-                    React.createElement('canvas', {
-                        key: 'chart',
-                        ref: chartRef,
-                        style: {
-                            width: '100%',
-                            height: '100%'
-                        }
-                    })
-                ),
-                
-                // Custom Legend - Economist style
-                React.createElement('div', {
-                    key: 'custom-legend',
-                    className: 'custom-legend'
+                    className: 'chart-wrapper'
                 }, [
                     React.createElement('div', {
-                        key: 'market-price-legend',
-                        className: 'legend-item'
-                    }, [
-                        React.createElement('span', {
-                            key: 'dot',
-                            className: 'legend-dot',
-                            style: { backgroundColor: '#00528a' }
-                        }),
-                        React.createElement('span', {
-                            key: 'text'
-                        }, 'Market Price')
-                    ]),
+                        style: { height: '400px', width: '100%', padding: '16px' }
+                    }, React.createElement('canvas', {
+                        ref: chartRef,
+                        style: { width: '100%', height: '100%' }
+                    })),
                     
+                    // Legend
                     React.createElement('div', {
-                        key: 'cost-mint-legend',
-                        className: 'legend-item'
+                        key: 'legend',
+                        className: 'chart-legend'
                     }, [
-                        React.createElement('span', {
-                            key: 'dot',
-                            className: 'legend-dot',
-                            style: { backgroundColor: '#b15bcf' }
-                        }),
-                        React.createElement('span', {
-                            key: 'text'
-                        }, 'Cost to Mint')
-                    ]),
-                    
-                    React.createElement('div', {
-                        key: 'combined-revenue-legend',
-                        className: 'legend-item'
-                    }, [
-                        React.createElement('span', {
-                            key: 'dot',
-                            className: 'legend-dot',
-                            style: { backgroundColor: '#20b2aa' }
-                        }),
-                        React.createElement('span', {
-                            key: 'text'
-                        }, 'Combined Revenue')
-                    ]),
-                    
-                    React.createElement('div', {
-                        key: 'fee-revenue-legend',
-                        className: 'legend-item'
-                    }, [
-                        React.createElement('span', {
-                            key: 'square',
-                            className: 'legend-square',
-                            style: { 
-                                backgroundColor: '#b15bcf',
-                                opacity: 0.6
-                            }
-                        }),
-                        React.createElement('span', {
-                            key: 'text'
-                        }, 'Fee Revenue Layer')
-                    ]),
-                    
-                    React.createElement('div', {
-                        key: 'profit-region-legend',
-                        className: 'legend-item'
-                    }, [
-                        React.createElement('span', {
-                            key: 'square',
-                            className: 'legend-square',
-                            style: { 
-                                backgroundColor: '#20b2aa',
-                                opacity: 0.6
-                            }
-                        }),
-                        React.createElement('span', {
-                            key: 'text'
-                        }, 'Profit Region')
-                    ])
+                        React.createElement('div', {
+                            key: 'trading-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'trading-color',
+                                className: 'legend-color',
+                                style: { backgroundColor: colors.trading }
+                            }),
+                            React.createElement('span', { key: 'trading-text' }, 'Trading Revenue')
+                        ]),
+                        React.createElement('div', {
+                            key: 'staking-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'staking-color',
+                                className: 'legend-color',
+                                style: { backgroundColor: colors.staking }
+                            }),
+                            React.createElement('span', { key: 'staking-text' }, 'Staking Revenue')
+                        ]),
+                        React.createElement('div', {
+                            key: 'lending-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'lending-color',
+                                className: 'legend-color',
+                                style: { backgroundColor: colors.lending }
+                            }),
+                            React.createElement('span', { key: 'lending-text' }, 'Lending Revenue')
+                        ]),
+                        React.createElement('div', {
+                            key: 'txfees-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'txfees-color',
+                                className: 'legend-color',
+                                style: { backgroundColor: colors.txFees }
+                            }),
+                            React.createElement('span', { key: 'txfees-text' }, 'Transaction Fees')
+                        ]),
+                        viewType === 'line' && React.createElement('div', {
+                            key: 'total-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'total-color',
+                                className: 'legend-color',
+                                style: { backgroundColor: '#8884d8' }
+                            }),
+                            React.createElement('span', { key: 'total-text' }, 'Total Revenue')
+                        ]),
+                        React.createElement('div', {
+                            key: 'market-legend',
+                            className: 'legend-item'
+                        }, [
+                            React.createElement('div', {
+                                key: 'market-color',
+                                className: 'legend-color dashed',
+                                style: { color: colors.market }
+                            }),
+                            React.createElement('span', { key: 'market-text' }, 'Market Performance')
+                        ])
+                    ].filter(Boolean))
                 ]),
-                
-                // Source information - Economist style
+
+                // Source information
                 React.createElement('div', {
                     key: 'source',
                     className: 'chart-source'
-                }, 'Source: Economic modeling of 1:1:1:1 token distribution system')
+                }, 'Source: Revenue analysis across trading, staking, lending and transaction fee layers')
             ]);
         };
 
         // Render
         setTimeout(() => {
             try {
-                const root = ReactDOM.createRoot(document.getElementById('economic-layering-chart'));
+                const root = ReactDOM.createRoot(document.getElementById('fee-revenue-chart'));
                 root.render(React.createElement(EconomicLayeringChart));
             } catch (error) {
-                document.getElementById('economic-layering-chart').innerHTML = 
+                document.getElementById('fee-revenue-chart').innerHTML = 
                     `<div style="padding: 20px; text-align: center; color: red;">Error: ${error.message}</div>`;
             }
         }, 1000);
